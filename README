@@ -2,6 +2,7 @@ V0.1    June 21st 2011
 ========================
 Initial version
 
+TODO
 Add menu with New Game and, maybe, new options
 Add better collisions
 Add subclasses of Alien with different damage
