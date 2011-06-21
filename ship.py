@@ -2,16 +2,22 @@ import pygame
 import utils
 from math import *
 
+"""This class represents the ship that the player controls"""
 class Ship(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.image, self.rect = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,0,64,64))
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
+        #Initial position
         self.rect.topleft = 10, 10
+        #User interactions modify this, current speed of movement (positive->up or negative->down)
         self.momentum = 0
+        #Max speed of the ship
         self.max_momentum = 20
+        #Initial life counter
         self.life = 10
+        #'up' or 'down' (for the animation)
         self.status = ''
 
     def update(self):

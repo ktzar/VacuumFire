@@ -12,16 +12,6 @@ from life_meter import LifeMeter
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
-""" TODO 
-Add better collisions
-Add subclasses of Alien with different damage
-Add explosions to Alien dying
-Add image for the background with walls
-Add laser limit
-Add gameover
-Add sprites for the ship moving up and down
-"""
-
 def main():
     """this function is called when the program starts.
        it initializes everything it needs, then runs in
@@ -53,12 +43,17 @@ def main():
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
+    #The player's ship
     ship = Ship()
+    #The player's ship
     lifemeter = LifeMeter()
 
-    good_guy    = pygame.sprite.RenderPlain((ship))
-    bad_guys    = pygame.sprite.Group()
+    player    = pygame.sprite.RenderPlain((ship))
+    #group that stores all enemies
+    enemies    = pygame.sprite.Group()
+    #group that stores all the lasers the player shoots
     fire        = pygame.sprite.Group()
+    #group for information sprites in the screen, should be rendered the last one
     hud         = pygame.sprite.Group()
     explosions  = pygame.sprite.Group()
     hud.add(lifemeter)
@@ -75,13 +70,16 @@ def main():
         #Handle Input Events
         for event in pygame.event.get():
             if event.type == QUIT:
+                #exit
                 return
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                #exit
                 return
             elif event.type == KEYDOWN and event.key == K_SPACE:
-                laser = Laser(ship)
+                #shoot a laser if the max number is not reached
+                if Laser.num < Laser.max_lasers:
+                    laser = Laser(ship)
                 fire.add(laser)
-                sound_laser.play()
             elif event.type == KEYDOWN and event.key == K_UP:
                 ship.move_up()
             elif event.type == KEYDOWN and event.key == K_DOWN:
@@ -98,18 +96,18 @@ def main():
 
         if random.randint(0,50) == 0:
             alien = Alien()
-            bad_guys.add(alien)
+            enemies.add(alien)
 
 
         #aliens damaging the player, remove them
-        damage  = pygame.sprite.spritecollide(ship, bad_guys, True)
+        damage  = pygame.sprite.spritecollide(ship, enemies, True)
         if len(damage) > 0:
             ship.damage()
             lifemeter.life = ship.life
 
         #aliens hit by the fire, remove them
         for fireball in fire:
-            hit = pygame.sprite.spritecollide(fireball, bad_guys, True)
+            hit = pygame.sprite.spritecollide(fireball, enemies, True)
             for dead in hit:
                 explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
                 print 'Win {0}'.format((dead.value*1000))
@@ -117,16 +115,17 @@ def main():
                 sound_bomb.play()
 
         all_sprites = pygame.sprite.Group()
-        all_sprites.add(good_guy.sprites())
-        all_sprites.add(bad_guys.sprites())
+        all_sprites.add(player.sprites())
+        all_sprites.add(enemies.sprites())
         all_sprites.add(fire.sprites())
         all_sprites.add(hud.sprites())
         all_sprites.add(explosions.sprites())
         all_sprites.update()
 
-        #Draw Everything
+        #Move and draw the background
         back_rect = back_rect.move((-1,0))
         background.blit(back_image, back_rect)
+
         score_text = 'Score: {0}'.format((score))
 
         text = font.render(score_text, 1, (255, 255, 255))
