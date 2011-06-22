@@ -12,6 +12,12 @@ from life_meter import LifeMeter
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
+def gameover():
+    print "Game Over"
+    pygame.quit()
+    quit()
+
+
 def main():
     """this function is called when the program starts.
        it initializes everything it needs, then runs in
@@ -80,6 +86,14 @@ def main():
                 if Laser.num < Laser.max_lasers:
                     laser = Laser(ship)
                 fire.add(laser)
+            elif event.type == KEYDOWN and event.key == K_LEFT:
+                ship.move_left()
+            elif event.type == KEYDOWN and event.key == K_RIGHT:
+                ship.move_right()
+            elif event.type == KEYUP and event.key == K_LEFT:
+                ship.stop_move_left()
+            elif event.type == KEYUP and event.key == K_RIGHT:
+                ship.stop_move_right()
             elif event.type == KEYDOWN and event.key == K_UP:
                 ship.move_up()
             elif event.type == KEYDOWN and event.key == K_DOWN:
@@ -98,12 +112,14 @@ def main():
             alien = Alien()
             enemies.add(alien)
 
-
         #aliens damaging the player, remove them
         damage  = pygame.sprite.spritecollide(ship, enemies, True)
         if len(damage) > 0:
             ship.damage()
+            lifemeter.shake()
             lifemeter.life = ship.life
+            if lifemeter.life == 0:
+                gameover()
 
         #aliens hit by the fire, remove them
         for fireball in fire:
