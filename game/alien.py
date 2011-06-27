@@ -20,12 +20,18 @@ class Alien(pygame.sprite.Sprite):
         self.move = -random.randint(2,4)
         self.amplitude = random.randint(1,5)
         self.frequency = random.random()*0.1+0.05
+        self.target = None
+
+    def set_target(self, target):
+        self.target = target 
 
     def update(self):
         self.cycle+=self.frequency
         self.rect = self.rect.move((self.move, self.amplitude*math.sin(self.cycle)))
         if self.rect.left < 0:
             self.kill()
+        if self.target != None:
+            self.rect = self.rect.move((0, -(self.rect.top-self.target.rect.top)/100))
 
     def kill(self):
         pygame.sprite.Sprite.kill(self)

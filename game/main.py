@@ -6,6 +6,7 @@ import utils
 from ship import Ship
 from laser import Laser
 from alien import Alien
+from stage import Stage
 from explosion import Explosion
 from life_meter import LifeMeter
 from background import Background
@@ -32,7 +33,7 @@ def main():
 #sounds
     music = utils.load_sound('archivo.ogg')
     warning = utils.load_sound('warning.ogg')
-    music.play()
+    #music.play()
 
 #Create The Backgound
     background = Background(screen.get_size())
@@ -58,6 +59,8 @@ def main():
     hud         = pygame.sprite.Group()
     explosions  = pygame.sprite.Group()
     hud.add(lifemeter)
+    level = Stage()
+    hud.add(level.sprites())
     font = utils.load_font('4114blasterc.ttf', 36)
 
     clock = pygame.time.Clock()
@@ -105,6 +108,7 @@ def main():
 
         if random.randint(0,50) == 0:
             alien = Alien()
+            alien.set_target(ship)
             enemies.add(alien)
 
 #aliens damaging the player, remove them
