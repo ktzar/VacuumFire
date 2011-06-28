@@ -25,7 +25,6 @@ class Laser(pygame.sprite.Sprite):
         self.rect.top+= owner.rect.height/2-10
         self.rect.left+= owner.rect.width*0.5
         self.move = 5
-        print Laser.num," lasers in screen"
 
     def kill(self):
         #Remove the laser from the groups and decrease the lasers on screen

@@ -60,7 +60,6 @@ def main():
     explosions  = pygame.sprite.Group()
     hud.add(lifemeter)
     level = Stage()
-    hud.add(level.sprites())
     font = utils.load_font('4114blasterc.ttf', 36)
 
     clock = pygame.time.Clock()
@@ -68,7 +67,9 @@ def main():
     game_started = False
 
 #Main Loop
+    count = 0
     while 1:
+        count = (count+1)%50
         clock.tick(50)
 
 #Handle Input Events
@@ -122,14 +123,18 @@ def main():
             if lifemeter.life == 0:
                 gameover()
 
+        print (pygame.sprite.spritecollide(ship, level, True))
+
 #aliens hit by the fire, remove them
         for fireball in fire:
             hit = pygame.sprite.spritecollide(fireball, enemies, True)
             for dead in hit:
                 explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
-                print 'Win {0}'.format((dead.value*1000))
                 score+=dead.value*1000
 
+#draw the level
+
+        level.update()
         all_sprites = pygame.sprite.Group()
         all_sprites.add(player.sprites())
         all_sprites.add(enemies.sprites())
@@ -137,6 +142,7 @@ def main():
         all_sprites.add(hud.sprites())
         all_sprites.add(explosions.sprites())
         all_sprites.update()
+        all_sprites.add(level.sprites())
         background.update()
 
 #Move and draw the background
