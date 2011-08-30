@@ -114,6 +114,8 @@ def main():
 
 #aliens damaging the player, remove them
         damage  = pygame.sprite.spritecollide(ship, enemies, True)
+        if level.checkcollide(ship.rect):
+            damage.append(1)
         if len(damage) > 0:
             background.warning()
             ship.damage()

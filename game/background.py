@@ -17,14 +17,17 @@ class Background(pygame.Surface):
 #counter to switch warning on and off
         self.status_count = 0
         self.status_count_max = 50
+        self.counter = 0
 
     def warning(self):
         self.status = Background.WARNING
         self.status_count = self.status_count_max
 
     def update(self):
-        self.blit(self.back_image, self.back_rect)
-        self.back_rect = self.back_rect.move((-1,0))
+
+        self.counter = self.counter + 1
+        if self.counter%2 ==0:
+            self.back_rect = self.back_rect.move((-1,0))
         self.blit(self.back_image, self.back_rect)
 
         if self.status == Background.WARNING:
