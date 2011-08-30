@@ -134,7 +134,6 @@ def main():
 
 #draw the level
 
-        level.update()
         all_sprites = pygame.sprite.Group()
         all_sprites.add(player.sprites())
         all_sprites.add(enemies.sprites())
@@ -142,6 +141,7 @@ def main():
         all_sprites.add(hud.sprites())
         all_sprites.add(explosions.sprites())
         all_sprites.update()
+        level.update()
         background.update()
 
 #Move and draw the background
@@ -151,7 +151,7 @@ def main():
         text = font.render(score_text, 1, (255, 255, 255))
 
         screen.blit(background, (0, 0))
-        screen.blit(level, (0,0))
+        screen.blit(level, (0, 0))
         screen.blit(text, (10, 10))
 
 #draw all the groups of sprites
