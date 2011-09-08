@@ -1,3 +1,4 @@
+import random
 import pygame
 import utils
 
@@ -22,8 +23,10 @@ class Stage(pygame.Surface):
         self.level_data, self.rect = utils.load_image('level_1.gif')
         pygame.Surface.__init__(self, (self.rect.width*16, self.rect.height*16))
         self.counter = 0
+        self.scrolled = 0
         self.fill((0,0,0))
         self.set_colorkey((0,0,0))
+        self.limits = []
 
         self.images_grass = []
         self.image_grass, self.rect_grass = utils.load_image('stage_grass_1.png')
@@ -46,11 +49,23 @@ class Stage(pygame.Surface):
 
         self.image_powerup, self.rect_grass = utils.load_image('item.png')
 
-        colors = {"grass":(0,0,0,255), "powerup":(255,0,0,255)}
+        colors = {"grass":(0,0,0,255), "powerup":(255,0,0,255), 'bg':(229,229,229,255)}
 
         self.rect = self.rect.move((1,0))
-        for x in range(0, self.rect.width):
-            for y in range(self.rect.height):
+        for x in range(0, self.rect.width-1):
+            #will store top and bottom limits and append it to self.limits
+            #to control the ship not getting over this
+            x_limits = [0,0]
+            for y in range(self.rect.height-1):
+                #Calculate top and bottom limits
+                if y>0 and self.level_data.get_at((x,y)) == colors["grass"] and \
+                self.level_data.get_at((x,y+1)) == colors["bg"]:
+                    x_limits[0] = y+1
+
+                if y<self.rect.height and self.level_data.get_at((x,y)) == colors["bg"] and \
+                self.level_data.get_at((x,y+1)) == colors["grass"]:
+                    x_limits[1] = y-1
+
                 if self.level_data.get_at((x,y)) == colors["powerup"]:
                     self.blit(self.image_powerup, (x*16, y*16))
                 elif self.level_data.get_at((x,y)) == colors["grass"]:
@@ -118,11 +133,25 @@ class Stage(pygame.Surface):
 
                     if sprite_chosen == "center":
                         #Choose one random grass sprite
-                        grass_choice = (x + y ) % 4
+                        grass_choice = (x + y + random.randint(0,50)  ) % 4
                         sprite_chosen = self.images_grass[grass_choice]
                     self.blit(sprite_chosen, (x*16, y*16))
 
+            self.limits.append(x_limits)
 
     def update(self):
         self.scroll(-1,0)
+        self.scrolled+=1
+
+    def checkcollide(self, rect):
+        the_limits = self.limits[int(self.scrolled/16) + int(rect.left/16)]
+
+        if the_limits[0] != 0 and the_limits[0]*16 > rect.top:
+            return True
+
+        if the_limits[1] != 0 and the_limits[1]*16 < rect.top:
+            return True
+
+        return False
+
         

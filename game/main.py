@@ -1,5 +1,5 @@
 #Import Modules
-import os, pygame
+import os, pygame, time
 import random
 from pygame.locals import *
 import utils
@@ -13,12 +13,6 @@ from background import Background
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
-
-def gameover():
-    print "Game Over"
-    pygame.quit()
-    quit()
-
 
 def main():
     """this function is called when the program starts.
@@ -45,6 +39,7 @@ def main():
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
+
 #The player's ship
     ship = Ship()
 #The player's ship
@@ -62,9 +57,11 @@ def main():
     level = Stage()
     font = utils.load_font('4114blasterc.ttf', 36)
 
+
     clock = pygame.time.Clock()
 
     game_started = False
+    game_finished = False
 
 #Main Loop
     count = 0
@@ -72,39 +69,48 @@ def main():
         count = (count+1)%50
         clock.tick(100)
 
+
 #Handle Input Events
         for event in pygame.event.get():
             if event.type == QUIT:
 #exit
                 return
-            elif event.type == KEYDOWN and event.key == K_ESCAPE:
-#exit
-                return
-            elif event.type == KEYDOWN and event.key == K_SPACE:
-#shoot a laser if the max number is not reached
-                if Laser.num < Laser.max_lasers:
-                    laser = Laser(ship)
-                fire.add(laser)
-            elif event.type == KEYDOWN and event.key == K_LEFT:
-                ship.move_left()
-            elif event.type == KEYDOWN and event.key == K_RIGHT:
-                ship.move_right()
-            elif event.type == KEYUP and event.key == K_LEFT:
-                ship.stop_move_left()
-            elif event.type == KEYUP and event.key == K_RIGHT:
-                ship.stop_move_right()
-            elif event.type == KEYDOWN and event.key == K_UP:
-                ship.move_up()
-            elif event.type == KEYDOWN and event.key == K_DOWN:
-                ship.move_down()
-            elif event.type == KEYUP and event.key == K_UP:
-                ship.stop_move_up()
-            elif event.type == KEYUP and event.key == K_DOWN:
-                ship.stop_move_down()
-            elif event.type == KEYDOWN:
+            elif event.type == KEYDOWN and event.key == K_ESCAPE and game_finished == True:
+                pygame.quit()
+                quit()
+                
+            if event.type == KEYDOWN:
                 game_started = True
+                if event.key == K_ESCAPE:
+                    return    #exit
+                elif event.key == K_SPACE:
+    #shoot a laser if the max number is not reached
+                    if Laser.num < Laser.max_lasers:
+                        laser = Laser(ship)
+                    fire.add(laser)
+                elif event.key == K_LEFT:
+                    ship.move_left()
+                elif event.key == K_RIGHT:
+                    ship.move_right()
+                elif event.key == K_UP:
+                    ship.move_up()
+                elif event.key == K_DOWN:
+                    ship.move_down()
+
+            if event.type == KEYUP:
+                if event.key == K_LEFT:
+                    ship.stop_move_left()
+                elif event.key == K_RIGHT:
+                    ship.stop_move_right()
+                elif event.key == K_UP:
+                    ship.stop_move_up()
+                elif event.key == K_DOWN:
+                    ship.stop_move_down()
 
         if game_started == False:
+            start_text = font.render('Press any key to start', 2, (0,0,0))
+            screen.blit(start_text, (150, 200))
+            pygame.display.flip()
             continue
 
         if random.randint(0,50) == 0:
@@ -114,14 +120,22 @@ def main():
 
 #aliens damaging the player, remove them
         damage  = pygame.sprite.spritecollide(ship, enemies, True)
+
+#check colisions with stage
+        if level.checkcollide(ship.rect):
+#add some fancy explosions in the damage area
+            explosions.add(Explosion(pygame.Rect(ship.rect.x,ship.rect.y,0,0)))
+            damage.append(1)
+
         if len(damage) > 0:
             background.warning()
             ship.damage()
             lifemeter.shake()
             warning.play()
             lifemeter.life = ship.life
-            if lifemeter.life == 0:
-                gameover()
+            if lifemeter.life < 1:
+                game_finished = True
+                warning.stop()
 
         #print (pygame.sprite.spritecollide(ship, level, True))
 
@@ -154,8 +168,15 @@ def main():
         screen.blit(level, (0, 0))
         screen.blit(text, (10, 10))
 
+        if game_finished == True:
+            gameover_text = font.render("Game Over", 2, (255, 255, 255))
+            screen.blit(gameover_text, (280, 200))
+            gameover_text = font.render("Press Esc", 2, (255, 255, 255))
+            screen.blit(gameover_text, (280, 230))
+        else:
+            all_sprites.draw(screen)
+
 #draw all the groups of sprites
-        all_sprites.draw(screen)
 
         pygame.display.flip()
 

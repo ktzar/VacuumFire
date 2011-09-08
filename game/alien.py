@@ -11,7 +11,7 @@ class Alien(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         if Alien.sound_bomb == None:
             Alien.sound_bomb = utils.load_sound('bomb-02.wav')
-        self.images = ('alien1.gif', 'alien2.gif', 'alien3.gif')
+        self.images = ('alien1.gif', 'alien2.gif', 'alien3.gif', 'alien4.gif')
         self.cycle = 0
         self.value = random.randint(0,len(self.images)-1)
         self.image, self.rect = utils.load_image(self.images[self.value], -1)

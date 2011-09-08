@@ -8,6 +8,7 @@ class Laser(pygame.sprite.Sprite):
     #max number of lasers in the screen
     max_lasers = 3
     sound_laser = 0
+    move = 15
 
     def __init__(self, owner):
         if Laser.sound_laser == 0:
@@ -24,7 +25,6 @@ class Laser(pygame.sprite.Sprite):
         self.rect = owner.rect.copy()
         self.rect.top+= owner.rect.height/2-10
         self.rect.left+= owner.rect.width*0.5
-        self.move = 5
 
     def kill(self):
         #Remove the laser from the groups and decrease the lasers on screen
