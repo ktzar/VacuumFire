@@ -1,3 +1,4 @@
+import random
 import pygame
 import utils
 
@@ -59,11 +60,11 @@ class Stage(pygame.Surface):
                 #Calculate top and bottom limits
                 if y>0 and self.level_data.get_at((x,y)) == colors["grass"] and \
                 self.level_data.get_at((x,y+1)) == colors["bg"]:
-                    x_limits[0] = y
+                    x_limits[0] = y+1
 
                 if y<self.rect.height and self.level_data.get_at((x,y)) == colors["bg"] and \
                 self.level_data.get_at((x,y+1)) == colors["grass"]:
-                    x_limits[1] = y
+                    x_limits[1] = y-1
 
                 if self.level_data.get_at((x,y)) == colors["powerup"]:
                     self.blit(self.image_powerup, (x*16, y*16))
@@ -132,21 +133,17 @@ class Stage(pygame.Surface):
 
                     if sprite_chosen == "center":
                         #Choose one random grass sprite
-                        grass_choice = (x + y ) % 4
+                        grass_choice = (x + y + random.randint(0,50)  ) % 4
                         sprite_chosen = self.images_grass[grass_choice]
                     self.blit(sprite_chosen, (x*16, y*16))
 
             self.limits.append(x_limits)
-        print self.limits 
 
     def update(self):
         self.scroll(-1,0)
         self.scrolled+=1
 
     def checkcollide(self, rect):
-        if self.scrolled%10 == 0:
-            print "Current limits in {0}: {1},{2}".format(int(self.scrolled), self.limits[int(self.scrolled/16)][0], self.limits[int(self.scrolled/24)][1])
-            print "Current ship position: {0}:{1}".format(rect.top, rect.left)
         the_limits = self.limits[int(self.scrolled/16) + int(rect.left/16)]
 
         if the_limits[0] != 0 and the_limits[0]*16 > rect.top:

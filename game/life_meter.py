@@ -17,7 +17,10 @@ class LifeMeter(pygame.sprite.Sprite):
         self.status = 50
 
     def update(self):
-        pos = pygame.Rect(0,(self.life-1)*20,140,20)
+        if self.life > 0:
+            pos = pygame.Rect(0,(self.life-1)*20,140,20)
+        else:
+            pos = pygame.Rect(0,0,140,20)
         self.image, foo = utils.load_image_sprite('life.gif', rect=pos)
 #reduce status until 0 to shake
         if self.status>0:
