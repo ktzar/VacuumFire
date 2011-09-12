@@ -2,26 +2,13 @@ import random
 import pygame
 import utils
 
-class Grass(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image('stage_grass.png')
-        self.rect.top   = pos.top
-        self.rect.left  = pos.left 
-
-class Powerup(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = utils.load_image('item.png')
-        self.rect.top   = pos.top 
-        self.rect.left  = pos.left
-
 
 """Stage"""
 class Stage(pygame.Surface):
     def __init__(self):
         self.level_data, self.rect = utils.load_image('level_1.gif')
-        pygame.Surface.__init__(self, (self.rect.width*16, self.rect.height*16))
+        self.ratio = 16 #ratio of pixel in stage file / pixel in game
+        pygame.Surface.__init__(self, (self.rect.width*self.ratio, self.rect.height*self.ratio))
         self.counter = 0
         self.scrolled = 0
         self.fill((0,0,0))
@@ -47,9 +34,12 @@ class Stage(pygame.Surface):
         self.image_grass_l, self.rect_grass = utils.load_image('stage_grass_l.png')
         self.image_grass_t, self.rect_grass = utils.load_image('stage_grass_t.png')
 
-        self.image_powerup, self.rect_grass = utils.load_image('item.png')
 
-        colors = {"grass":(0,0,0,255), "powerup":(255,0,0,255), 'bg':(229,229,229,255)}
+        self.colors = { \
+            "grass":(0,0,0,255), \
+            "enemies":(255,0,0,255), \
+            'bg':(229,229,229,255) \
+        }
 
         self.rect = self.rect.move((1,0))
         for x in range(0, self.rect.width-1):
@@ -58,74 +48,72 @@ class Stage(pygame.Surface):
             x_limits = [0,0]
             for y in range(self.rect.height-1):
                 #Calculate top and bottom limits
-                if y>0 and self.level_data.get_at((x,y)) == colors["grass"] and \
-                self.level_data.get_at((x,y+1)) == colors["bg"]:
+                if y>0 and self.level_data.get_at((x,y)) == self.colors["grass"] and \
+                self.level_data.get_at((x,y+1)) == self.colors["bg"]:
                     x_limits[0] = y+1
 
-                if y<self.rect.height and self.level_data.get_at((x,y)) == colors["bg"] and \
-                self.level_data.get_at((x,y+1)) == colors["grass"]:
+                if y<self.rect.height and self.level_data.get_at((x,y)) == self.colors["bg"] and \
+                self.level_data.get_at((x,y+1)) == self.colors["grass"]:
                     x_limits[1] = y-1
 
-                if self.level_data.get_at((x,y)) == colors["powerup"]:
-                    self.blit(self.image_powerup, (x*16, y*16))
-                elif self.level_data.get_at((x,y)) == colors["grass"]:
+                if self.level_data.get_at((x,y)) == self.colors["grass"]:
                     try:
                         sprite_chosen = "center"
                         if y == 0 or x == 0:
                             sprite_chosen = "center"
                         #Grass surrounded by grass
-                        elif self.level_data.get_at((x-1, y)) == colors["grass"] and \
-                        self.level_data.get_at((x+1, y)) == colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) == colors["grass"]:
+                        elif self.level_data.get_at((x-1, y)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y)) == self.colors["grass"] and \
+                        self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x, y+1)) == self.colors["grass"]:
                             sprite_chosen = "center"
 
                         #Corner
-                        elif self.level_data.get_at((x-1, y)) != colors["grass"] and\
-                        self.level_data.get_at((x-1, y-1)) != colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) != colors["grass"]:
+                        elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
+                        self.level_data.get_at((x-1, y-1)) != self.colors["grass"] and \
+                        self.level_data.get_at((x, y-1)) != self.colors["grass"]:
                             sprite_chosen = self.image_grass_tl
 
                         #Corner
-                        elif self.level_data.get_at((x+1, y)) != colors["grass"] and\
-                        self.level_data.get_at((x+1, y-1)) != colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) != colors["grass"]:
+                        elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
+                        self.level_data.get_at((x+1, y-1)) != self.colors["grass"] and \
+                        self.level_data.get_at((x, y-1)) != self.colors["grass"]:
                             sprite_chosen = self.image_grass_tr
 
                         #Corner
-                        elif self.level_data.get_at((x-1, y)) != colors["grass"] and\
-                        self.level_data.get_at((x-1, y+1)) != colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) != colors["grass"]:
+                        elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
+                        self.level_data.get_at((x-1, y+1)) != self.colors["grass"] and \
+                        self.level_data.get_at((x, y+1)) != self.colors["grass"]:
                             sprite_chosen = self.image_grass_bl
 
                         #Corner
-                        elif self.level_data.get_at((x+1, y)) != colors["grass"] and\
-                        self.level_data.get_at((x+1, y+1)) != colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) != colors["grass"]:
+                        elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
+                        self.level_data.get_at((x+1, y+1)) != self.colors["grass"] and \
+                        self.level_data.get_at((x, y+1)) != self.colors["grass"]:
                             sprite_chosen = self.image_grass_br
 
                         #Side
-                        elif self.level_data.get_at((x, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x+1, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x-1, y-1)) == colors["grass"]:
+                        elif self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"]:
                             sprite_chosen = self.image_grass_b
 
                         #Side
-                        elif self.level_data.get_at((x, y+1)) == colors["grass"] and \
-                        self.level_data.get_at((x+1, y+1)) == colors["grass"] and \
-                        self.level_data.get_at((x-1, y+1)) == colors["grass"]:
+                        elif self.level_data.get_at((x, y+1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y+1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y+1)) == self.colors["grass"]:
                             sprite_chosen = self.image_grass_t
 
                         #Side
-                        elif self.level_data.get_at((x+1, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x+1, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x+1, y)) == colors["grass"]:
+                        elif self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y)) == self.colors["grass"]:
                             sprite_chosen = self.image_grass_l
 
                         #Side
-                        elif self.level_data.get_at((x-1, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x-1, y-1)) == colors["grass"] and \
-                        self.level_data.get_at((x-1, y)) == colors["grass"]:
+                        elif self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y)) == self.colors["grass"]:
                             sprite_chosen = self.image_grass_r
 
                     except:
@@ -135,7 +123,7 @@ class Stage(pygame.Surface):
                         #Choose one random grass sprite
                         grass_choice = (x + y + random.randint(0,50)  ) % 4
                         sprite_chosen = self.images_grass[grass_choice]
-                    self.blit(sprite_chosen, (x*16, y*16))
+                    self.blit(sprite_chosen, (x*self.ratio, y*self.ratio))
 
             self.limits.append(x_limits)
 
@@ -144,14 +132,33 @@ class Stage(pygame.Surface):
         self.scrolled+=1
 
     def checkcollide(self, rect):
-        the_limits = self.limits[int(self.scrolled/16) + int(rect.left/16)]
+        if rect.width > self.ratio:
+            the_limits = self.limits[1+int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+        else:
+            the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
 
-        if the_limits[0] != 0 and the_limits[0]*16 > rect.top:
+        if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
             return True
 
-        if the_limits[1] != 0 and the_limits[1]*16 < rect.top:
+        if the_limits[1] != 0 and the_limits[1]*self.ratio < rect.top:
             return True
 
         return False
+
+#return the enemies in the current scroll position (self.scrolled + self.ratio).
+#only return enemies if self.scrolled%self.ratio == 0 (each pixel in the stage is one enemy, not self.ratio
+    def getenemies(self):
+        enemies = []
+        surf = pygame.display.get_surface()
+        screen_width = int(surf.get_width() / self.ratio)
+
+        if (self.scrolled%self.ratio == 0 ):
+            for y in range(self.rect.height-1):
+                x = int(self.scrolled/self.ratio)+screen_width
+                if self.level_data.get_at((x, y)) == self.colors["enemies"]:
+                    enemies.append(y*self.ratio)
+        return enemies
+        
+
 
         
