@@ -27,7 +27,7 @@ def main():
 #sounds
     music = utils.load_sound('archivo.ogg')
     warning = utils.load_sound('warning.ogg')
-    #music.play()
+    music.play()
 
 #Create The Backgound
     background = Background(screen.get_size())
