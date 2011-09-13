@@ -5,8 +5,8 @@ import utils
 
 """Stage"""
 class Stage(pygame.Surface):
-    def __init__(self):
-        self.level_data, self.rect = utils.load_image('level_1.gif')
+    def __init__(self, stage_file='level_1'):
+        self.level_data, self.rect = utils.load_image('{0}.gif'.format(stage_file))
         self.ratio = 16 #ratio of pixel in stage file / pixel in game
         pygame.Surface.__init__(self, (self.rect.width*self.ratio, self.rect.height*self.ratio))
         self.counter = 0

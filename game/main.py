@@ -3,11 +3,12 @@ import os, pygame, time
 import random
 from pygame.locals import *
 import utils
-from ship import Ship
-from laser import Laser
-from alien import Alien
-from stage import Stage
-from explosion import Explosion
+from ship       import Ship
+from laser      import Laser
+from powerup    import Powerup
+from alien      import Alien
+from stage      import Stage
+from explosion  import Explosion
 from life_meter import LifeMeter
 from background import Background
 
@@ -17,50 +18,51 @@ class Vacuum():
     def __init__(self):
         if not pygame.font: print 'Warning, fonts disabled'
         if not pygame.mixer: print 'Warning, sound disabled'
-        self.init()
+        self.initialise()
         self.loop()
 
-    def init(self):
+    def initialise(self):
         """this function is called when the program starts.
            it initializes everything it needs, then runs in
            a loop until the function returns."""
-    #Initialize Everything
+        #Initialize Everything
         pygame.init()
         self.screen = pygame.display.set_mode((640, 480))
-        pygame.display.set_caption('Ships')
+        pygame.display.set_caption('VacuumFire')
         pygame.mouse.set_visible(0)
-
-    #sounds
+        #icon
+        icon, foo = utils.load_image('icon.png')
+        pygame.display.set_icon(icon)
+        #sounds
         self.music = utils.load_sound('archivo.ogg')
         self.warning = utils.load_sound('warning.ogg')
         #music.play()
-
-    #Create The Backgound
+        #Create The Backgound
         self.background = Background(self.screen.get_size())
-
-    #game variables
+        #game variables
         self.score = 0
-
-    #Display The Background
+        #Display The Background
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
 
 
-    #The player's ship
+        #The player's ship
         self.ship = Ship()
-    #The player's ship
+        #The player's ship
         self.lifemeter = LifeMeter()
-
         self.player    = pygame.sprite.RenderPlain((self.ship))
-    #group that stores all enemies
+        #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
-    #group that stores all the lasers the player shoots
+        #group that stores all powerups
+        self.powerups    = pygame.sprite.Group()
+        #group that stores all the lasers the player shoots
         self.fire        = pygame.sprite.Group()
-    #group for information sprites in the screen, should be rendered the last one
+        #group for information sprites in the screen, should be rendered the last one
         self.hud         = pygame.sprite.Group()
         self.explosions  = pygame.sprite.Group()
         self.hud.add(self.lifemeter)
-        self.level = Stage()
+        #The level
+        self.level = Stage('level_1')
         self.font = utils.load_font('4114blasterc.ttf', 36)
 
 
@@ -70,18 +72,18 @@ class Vacuum():
         self.game_finished = False
 
 
-    def loop(self):
     #Main Loop
+    def loop(self):
         count = 0
         while 1:
             count = (count+1)%50
             self.clock.tick(50)
 
 
-    #Handle Input Events
+            #Handle Input Events
             for event in pygame.event.get():
                 if event.type == QUIT:
-    #exit
+                    #exit
                     return
                 elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
                     pygame.quit()
@@ -92,7 +94,7 @@ class Vacuum():
                     if event.key == K_ESCAPE:
                         return    #exit
                     elif event.key == K_SPACE:
-        #shoot a laser if the max number is not reached
+                        #shoot a laser if the max number is not reached
                         if Laser.num < Laser.max_lasers:
                             self.laser = Laser(self.ship)
                         self.fire.add(self.laser)
@@ -124,24 +126,26 @@ class Vacuum():
             new_enemies = self.level.getenemies() 
 
             for enemy_y in new_enemies:
-            #if random.randint(0,50) == 0:
+                #if random.randint(0,50) == 0:
                 alien = Alien(enemy_y)
                 alien.set_target(self.ship)
                 self.enemies.add(alien)
 
-    #aliens damaging the player, remove them
+            #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
 
-    #check colisions with stage
+            #check colisions with stage
             if self.level.checkcollide(self.ship.rect):
-    #add some fancy explosions in the damage area
+                #add some fancy explosions in the damage area
                 self.explosions.add(Explosion(pygame.Rect(self.ship.rect.x,self.ship.rect.y,0,0)))
                 damage.append(1)
 
+            #Apply damages to the player
             if len(damage) > 0:
                 self.background.warning()
                 self.ship.damage()
                 self.lifemeter.shake()
+                self.explosions.add(Explosion(self.ship.rect))
                 self.warning.play()
                 self.lifemeter.life = self.ship.life
                 if self.lifemeter.life < 1:
@@ -150,18 +154,25 @@ class Vacuum():
 
             #print (pygame.sprite.spritecollide(ship, level, True))
 
-    #aliens hit by the fire, remove them
+            #aliens hit by the fire, remove them
+            penetration = self.ship.powerup['penetrate']
             for fireball in self.fire:
                 hit = pygame.sprite.spritecollide(fireball, self.enemies, True)
                 for dead in hit:
+                    if dead.has_powerup():
+                        powerup = Powerup(dead.rect)
+                        self.powerups.add(powerup)
                     self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
                     self.score+=dead.value*1000
+                    if penetration == False:
+                        fireball.kill()
 
-    #draw the level
+            #draw the level
 
             all_sprites = pygame.sprite.Group()
             all_sprites.add(self.player.sprites())
             all_sprites.add(self.enemies.sprites())
+            all_sprites.add(self.powerups.sprites())
             all_sprites.add(self.fire.sprites())
             all_sprites.add(self.hud.sprites())
             all_sprites.add(self.explosions.sprites())
@@ -169,7 +180,7 @@ class Vacuum():
             self.level.update()
             self.background.update()
 
-    #Move and draw the background
+            #Move and draw the background
 
             score_text = 'Score: {0}'.format((self.score))
 
@@ -187,7 +198,7 @@ class Vacuum():
             else:
                 all_sprites.draw(self.screen)
 
-    #draw all the groups of sprites
+            #draw all the groups of sprites
 
             pygame.display.flip()
 

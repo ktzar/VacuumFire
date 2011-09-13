@@ -2,6 +2,7 @@ import pygame
 import utils
 
 class Background(pygame.Surface):
+
     IDLE = 0
     WARNING = 1
 
@@ -14,7 +15,7 @@ class Background(pygame.Surface):
         self.warning_image, self.warning_rect = utils.load_image('warning.png');
         self.back_rect_init = self.back_rect.copy()
         self.status = Background.IDLE
-#counter to switch warning on and off
+        #counter to switch warning on and off
         self.status_count = 0
         self.status_count_max = 50
         self.counter = 0
@@ -37,7 +38,7 @@ class Background(pygame.Surface):
             if self.status_count <= 0:
                 self.status = Background.IDLE
 
-#Repeat the background
+        #Repeat the background
         if -self.back_rect.left > self.back_rect_init.width-self.screen[0]:
             self.back_rect = self.back_rect_init.copy()
 

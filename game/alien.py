@@ -4,7 +4,7 @@ import random
 import math
 
 class Alien(pygame.sprite.Sprite):
-#bomb sound
+    #bomb sound
     sound_bomb = None
 
     def __init__(self, top = -1):
@@ -27,6 +27,10 @@ class Alien(pygame.sprite.Sprite):
 
     def set_target(self, target):
         self.target = target 
+
+    def has_powerup(self):
+        #Once every 5 enemies will generate a powerup
+        return (random.randint(1,5) == 1)
 
     def update(self):
         self.cycle+=self.frequency
