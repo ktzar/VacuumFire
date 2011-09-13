@@ -4,10 +4,10 @@ import random
 import math
 
 class Alien(pygame.sprite.Sprite):
-#bomb sound
+    #bomb sound
     sound_bomb = None
 
-    def __init__(self):
+    def __init__(self, top = -1):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         if Alien.sound_bomb == None:
             Alien.sound_bomb = utils.load_sound('bomb-02.wav')
@@ -15,7 +15,10 @@ class Alien(pygame.sprite.Sprite):
         self.cycle = 0
         self.value = random.randint(0,len(self.images)-1)
         self.image, self.rect = utils.load_image(self.images[self.value], -1)
-        self.rect.top = random.randint(0,480)
+        if top == -1:
+            self.rect.top = random.randint(0,480)
+        else:
+            self.rect.top = top
         self.rect.left = 640
         self.move = -random.randint(2,4)
         self.amplitude = random.randint(1,5)
@@ -24,6 +27,10 @@ class Alien(pygame.sprite.Sprite):
 
     def set_target(self, target):
         self.target = target 
+
+    def has_powerup(self):
+        #Once every 5 enemies will generate a powerup
+        return (random.randint(1,5) == 1)
 
     def update(self):
         self.cycle+=self.frequency

@@ -6,7 +6,7 @@ class Laser(pygame.sprite.Sprite):
     #number of lasers in the screen
     num = 0
     #max number of lasers in the screen
-    max_lasers = 3
+    max_lasers = 1
     sound_laser = 0
     move = 15
 
