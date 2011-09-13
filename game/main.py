@@ -140,15 +140,18 @@ class Vacuum():
             for powerup_obtained in powerups_obtained:
                 #play powerup sound
                 self.sounds['powerup'].play()
-                if self.ship.momentum_delta < 10:
-                    self.ship.momentum_delta *= 1.15
-                    print "Increase momentum to {0}".format(self.ship.momentum_delta)
-                elif Laser.max_lasers < 8:
+                #TODO powerup should be processed in ship
+                if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 2:
+                    self.ship.powerup['speedup'] += 0.5 
+                    print "Increase speed to {0}".format(self.ship.powerup['speedup'])
+                elif powerup_obtained.type == 2 and Laser.max_lasers < 8:
                     print "Increase lasers to {0}".format(Laser.max_lasers)
                     Laser.max_lasers += 1 
-                else:
+                elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
                     print "Activate penetration"
                     self.ship.powerup['penetrate'] = True
+                else:
+                    print "No more powerups available"
 
             #check colisions with stage
             if self.level.checkcollide(self.ship.rect):
@@ -176,7 +179,7 @@ class Vacuum():
                 hit = pygame.sprite.spritecollide(fireball, self.enemies, True)
                 for dead in hit:
                     if dead.has_powerup():
-                        powerup = Powerup(dead.rect)
+                        powerup = Powerup(dead.rect, dead.value)
                         self.powerups.add(powerup)
                     self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
                     self.score+=dead.value*1000

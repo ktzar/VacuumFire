@@ -4,7 +4,7 @@ import utils
 #Power up. It "ages" and TODO have a type to choose form a spritesheet. It moves backwards once created TODO with a nice bouncing effect
 class Powerup(pygame.sprite.Sprite):
 
-    def __init__(self, rect):
+    def __init__(self, rect, value):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.rect = pygame.Rect(0,0,64,52)
         self.rect.top = rect.top
@@ -12,7 +12,7 @@ class Powerup(pygame.sprite.Sprite):
         self.age = 0
         self.status = 0
         self.max_status = 3
-        self.type = 1
+        self.type = value % 3
 
     def update(self):
         self.age = self.age+1

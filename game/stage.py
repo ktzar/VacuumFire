@@ -15,23 +15,11 @@ class Stage(pygame.Surface):
         self.set_colorkey((0,0,0))
         self.limits = []
 
-        self.images_grass = []
-        self.image_grass, self.rect_grass = utils.load_image('stage_grass_1.png')
-        self.images_grass.append(self.image_grass)
-        self.image_grass, self.rect_grass = utils.load_image('stage_grass_2.png')
-        self.images_grass.append(self.image_grass)
-        self.image_grass, self.rect_grass = utils.load_image('stage_grass_3.png')
-        self.images_grass.append(self.image_grass)
-        self.image_grass, self.rect_grass = utils.load_image('stage_grass_4.png')
-        self.images_grass.append(self.image_grass)
 
         self.image_grass_bl, self.rect_grass = utils.load_image('stage_grass_bl.png')
         self.image_grass_br, self.rect_grass = utils.load_image('stage_grass_br.png')
         self.image_grass_tl, self.rect_grass = utils.load_image('stage_grass_tl.png')
         self.image_grass_tr, self.rect_grass = utils.load_image('stage_grass_tr.png')
-        self.image_grass_b, self.rect_grass = utils.load_image('stage_grass_b.png')
-        self.image_grass_r, self.rect_grass = utils.load_image('stage_grass_r.png')
-        self.image_grass_l, self.rect_grass = utils.load_image('stage_grass_l.png')
         self.image_grass_t, self.rect_grass = utils.load_image('stage_grass_t.png')
 
 
@@ -93,10 +81,24 @@ class Stage(pygame.Surface):
                             sprite_chosen = self.image_grass_br
 
                         #Side
+                        elif self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y)) == self.colors["bg"] and \
+                        self.level_data.get_at((x+1, y)) == self.colors["grass"]:
+                            sprite_chosen = self.get_grass_l()
+
+                        #Side
+                        elif self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                        self.level_data.get_at((x+1, y)) == self.colors["bg"] and \
+                        self.level_data.get_at((x-1, y)) == self.colors["grass"]:
+                            sprite_chosen = self.get_grass_r()
+
+                        #Side
                         elif self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
                         self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
                         self.level_data.get_at((x-1, y-1)) == self.colors["grass"]:
-                            sprite_chosen = self.image_grass_b
+                            sprite_chosen = self.get_grass_b()
 
                         #Side
                         elif self.level_data.get_at((x, y+1)) == self.colors["grass"] and \
@@ -104,17 +106,6 @@ class Stage(pygame.Surface):
                         self.level_data.get_at((x-1, y+1)) == self.colors["grass"]:
                             sprite_chosen = self.image_grass_t
 
-                        #Side
-                        elif self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y)) == self.colors["grass"]:
-                            sprite_chosen = self.image_grass_l
-
-                        #Side
-                        elif self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y)) == self.colors["grass"]:
-                            sprite_chosen = self.image_grass_r
 
                     except:
                         print "Out of range in {0},{1}".format(x,y)
@@ -122,7 +113,7 @@ class Stage(pygame.Surface):
                     if sprite_chosen == "center":
                         #Choose one random grass sprite
                         grass_choice = (x + y + random.randint(0,50)  ) % 4
-                        sprite_chosen = self.images_grass[grass_choice]
+                        sprite_chosen = self.get_grass_center()
                     self.blit(sprite_chosen, (x*self.ratio, y*self.ratio))
 
             self.limits.append(x_limits)
@@ -144,6 +135,22 @@ class Stage(pygame.Surface):
             return True
 
         return False
+
+    def get_grass_center(self):
+        image_grass, rect_grass = utils.load_image('stage_grass_{0}.png'.format(random.randint(1,4)))
+        return image_grass
+
+    def get_grass_b(self):
+        image_grass, rect_grass = utils.load_image('stage_grass_b_{0}.png'.format(random.randint(1,4)))
+        return image_grass
+
+    def get_grass_r(self):
+        image_grass, rect_grass = utils.load_image('stage_grass_r_{0}.png'.format(random.randint(1,4)))
+        return image_grass
+
+    def get_grass_l(self):
+        image_grass, rect_grass = utils.load_image('stage_grass_l_{0}.png'.format(random.randint(1,4)))
+        return image_grass
 
 #return the enemies in the current scroll position (self.scrolled + self.ratio).
 #only return enemies if self.scrolled%self.ratio == 0 (each pixel in the stage is one enemy, not self.ratio

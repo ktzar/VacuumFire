@@ -15,6 +15,7 @@ class Alien(pygame.sprite.Sprite):
         self.cycle = 0
         self.value = random.randint(0,len(self.images)-1)
         self.image, self.rect = utils.load_image(self.images[self.value], -1)
+        self.contains_powerup = (random.randint(1,15) == 1)
         if top == -1:
             self.rect.top = random.randint(0,480)
         else:
@@ -30,7 +31,7 @@ class Alien(pygame.sprite.Sprite):
 
     def has_powerup(self):
         #Once every 5 enemies will generate a powerup
-        return (random.randint(1,5) == 1)
+        return self.contains_powerup
 
     def update(self):
         self.cycle+=self.frequency
