@@ -34,9 +34,11 @@ class Vacuum():
         icon, foo = utils.load_image('icon.png')
         pygame.display.set_icon(icon)
         #sounds
-        self.music = utils.load_sound('archivo.ogg')
-        self.warning = utils.load_sound('warning.ogg')
-        #music.play()
+        self.sounds = {};
+        self.sounds['music'] = utils.load_sound('archivo.ogg')
+        self.sounds['warning'] = utils.load_sound('warning.wav')
+        self.sounds['powerup'] = utils.load_sound('powerup.wav')
+        #self.sounds['music'].play()
         #Create The Backgound
         self.background = Background(self.screen.get_size())
         #game variables
@@ -133,6 +135,20 @@ class Vacuum():
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
+            #powerups got by the player, remove them, play a sound and apply them
+            powerups_obtained  = pygame.sprite.spritecollide(self.ship, self.powerups, True)
+            for powerup_obtained in powerups_obtained:
+                #play powerup sound
+                self.sounds['powerup'].play()
+                if self.ship.momentum_delta < 10:
+                    self.ship.momentum_delta *= 1.15
+                    print "Increase momentum to {0}".format(self.ship.momentum_delta)
+                elif Laser.max_lasers < 8:
+                    print "Increase lasers to {0}".format(Laser.max_lasers)
+                    Laser.max_lasers += 1 
+                else:
+                    print "Activate penetration"
+                    self.ship.powerup['penetrate'] = True
 
             #check colisions with stage
             if self.level.checkcollide(self.ship.rect):
@@ -146,11 +162,11 @@ class Vacuum():
                 self.ship.damage()
                 self.lifemeter.shake()
                 self.explosions.add(Explosion(self.ship.rect))
-                self.warning.play()
+                self.sounds['warning'].play()
                 self.lifemeter.life = self.ship.life
                 if self.lifemeter.life < 1:
                     self.game_finished = True
-                    self.warning.stop()
+                    self.sounds['warning'].stop()
 
             #print (pygame.sprite.spritecollide(ship, level, True))
 

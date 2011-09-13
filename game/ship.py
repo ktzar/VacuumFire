@@ -10,7 +10,25 @@ class Ship(pygame.sprite.Sprite):
     UP = 3
     DOWN = 4
 
-    decceleration = 0.45
+    decceleration = 0.90
+    topleft = 10, 10
+    #User interactions modify this, current speed of movement (positive->up or negative->down)
+    momentum = 0
+    #Max speed of the ship
+    max_momentum = 20
+    #User interactions modify this, current speed of movement (positive->up or negative->down)
+    x_momentum = 0
+
+    #speed of the ship
+    momentum_delta = 2
+    #Max speed of the ship
+    max_x_momentum = 20
+    #Initial life counter
+    life = 10
+    #'up' or 'down' (for the animation)
+    status = ''
+    #Ship.LEFT or Ship.RIGHT (for the animation)
+    x_status = ''
 
     #TODO change status for constants for perfrmance
     def __init__(self):
@@ -19,48 +37,33 @@ class Ship(pygame.sprite.Sprite):
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         #Initial position
-        self.rect.topleft = 10, 10
-        #User interactions modify this, current speed of movement (positive->up or negative->down)
-        self.momentum = 0
-        #Max speed of the ship
-        self.max_momentum = 20
-        #User interactions modify this, current speed of movement (positive->up or negative->down)
-        self.x_momentum = 0
-        #Max speed of the ship
-        self.max_x_momentum = 20
-        #Initial life counter
-        self.life = 10
-        #'up' or 'down' (for the animation)
-        self.status = ''
-        #Ship.LEFT or Ship.RIGHT (for the animation)
-        self.x_status = ''
         self.powerup = { 'penetrate' : False, 'speedup' : 1 }
 
     def update(self):
         if self.x_status==Ship.LEFT and self.x_momentum < self.max_x_momentum:
-            self.x_momentum-=2
+            self.x_momentum-=self.momentum_delta
 
         if self.x_status==Ship.RIGHT and self.x_momentum > -self.max_x_momentum:
-            self.x_momentum+=2
+            self.x_momentum+=self.momentum_delta
 
         if (self.x_momentum < 0 and self.rect.left > 0) or (self.x_momentum > 0 and self.rect.left < 640-self.rect.width):
             self.rect = self.rect.move((self.x_momentum/5, 0))
 
-        self.x_momentum *= 0.95
+        self.x_momentum *= self.decceleration
 
         if abs(self.momentum) < 1:
             self.momentum = 0
 
         if self.status==Ship.DOWN and self.momentum < self.max_momentum:
-            self.momentum+=2
+            self.momentum+=self.momentum_delta
 
         if self.status==Ship.UP and self.momentum > -self.max_momentum:
-            self.momentum-=2
+            self.momentum-=self.momentum_delta
 
         if (self.momentum < 0 and self.rect.top > 0) or (self.momentum > 0 and self.rect.top < 480-self.rect.height):
             self.rect = self.rect.move((0, self.momentum/5))
 
-        self.momentum *= 0.95
+        self.momentum *= self.decceleration
 
         if abs(self.momentum) < 1:
             self.momentum = 0
