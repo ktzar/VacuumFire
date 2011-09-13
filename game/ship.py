@@ -8,9 +8,9 @@ class Ship(pygame.sprite.Sprite):
     LEFT = 0
     RIGHT = 1
     UP = 3
-    BOTTOM = 4
+    DOWN = 4
 
-    decceleration = 0.95
+    decceleration = 0.45
 
     #TODO change status for constants for perfrmance
     def __init__(self):

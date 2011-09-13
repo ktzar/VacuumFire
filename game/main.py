@@ -97,7 +97,7 @@ class Vacuum():
                         #shoot a laser if the max number is not reached
                         if Laser.num < Laser.max_lasers:
                             self.laser = Laser(self.ship)
-                        self.fire.add(self.laser)
+                            self.fire.add(self.laser)
                     elif event.key == K_LEFT:
                         self.ship.move_left()
                     elif event.key == K_RIGHT:
@@ -185,9 +185,11 @@ class Vacuum():
             score_text = 'Score: {0}'.format((self.score))
 
             text = self.font.render(score_text, 1, (255, 255, 255))
+            text_shadow = self.font.render(score_text, 1, (0,0,0))
 
             self.screen.blit(self.background, (0, 0))
             self.screen.blit(self.level, (0, 0))
+            self.screen.blit(text_shadow, (12, 12))
             self.screen.blit(text, (10, 10))
 
             if self.game_finished == True:
