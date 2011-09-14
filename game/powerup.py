@@ -16,7 +16,7 @@ class Powerup(pygame.sprite.Sprite):
 
     def update(self):
         self.age = self.age+1
-        self.rect = self.rect.move((-3, 0))
+        self.rect = self.rect.move((-(self.age/2-10), 0))
 
         if self.rect.left < 0:
             self.kill()

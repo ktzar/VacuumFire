@@ -35,5 +35,5 @@ class Laser(pygame.sprite.Sprite):
         self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
         self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
         self.rect = self.rect.move((self.move, 0))
-        if self.rect.left > 600:
+        if self.rect.left > 1000:
             self.kill()

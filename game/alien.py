@@ -21,7 +21,7 @@ class Alien(pygame.sprite.Sprite):
         else:
             self.rect.top = top
         self.rect.left = 640
-        self.move = -random.randint(2,4)
+        self.move = -random.randint(1,3)
         self.amplitude = random.randint(1,5)
         self.frequency = random.random()*0.1+0.05
         self.target = None

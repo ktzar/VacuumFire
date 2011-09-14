@@ -33,6 +33,8 @@ class Vacuum():
         #icon
         icon, foo = utils.load_image('icon.png')
         pygame.display.set_icon(icon)
+
+        self.game_paused = False
         #sounds
         self.sounds = {};
         self.sounds['music'] = utils.load_sound('archivo.ogg')
@@ -73,6 +75,66 @@ class Vacuum():
         self.game_started = False
         self.game_finished = False
 
+    def handle_keys(self):
+        #Handle Input Events
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                #exit
+                return
+            elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
+                pygame.quit()
+                quit()
+                
+            if event.type == KEYDOWN:
+                self.game_started = True
+                if event.key == K_ESCAPE:
+                    return false   #exit
+                elif event.key == K_SPACE:
+                    #shoot a laser if the max number is not reached
+                    if Laser.num < Laser.max_lasers:
+                        self.laser = Laser(self.ship)
+                        self.fire.add(self.laser)
+                elif event.key == K_LEFT:
+                    self.ship.move_left()
+                elif event.key == K_RIGHT:
+                    self.ship.move_right()
+                elif event.key == K_UP:
+                    self.ship.move_up()
+                elif event.key == K_DOWN:
+                    self.ship.move_down()
+                elif event.key == K_p:
+                    self.game_paused = not self.game_paused
+
+            if event.type == KEYUP:
+                if event.key == K_LEFT:
+                    self.ship.stop_move_left()
+                elif event.key == K_RIGHT:
+                    self.ship.stop_move_right()
+                elif event.key == K_UP:
+                    self.ship.stop_move_up()
+                elif event.key == K_DOWN:
+                    self.ship.stop_move_down()
+
+        return True
+
+    def process_powerups(self):
+        #powerups got by the player, remove them, play a sound and apply them
+        powerups_obtained  = pygame.sprite.spritecollide(self.ship, self.powerups, True)
+        for powerup_obtained in powerups_obtained:
+            #play powerup sound
+            self.sounds['powerup'].play()
+            #TODO powerup should be processed in ship
+            if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 2:
+                self.ship.powerup['speedup'] += 0.5 
+                print "Increase speed to {0}".format(self.ship.powerup['speedup'])
+            elif powerup_obtained.type == 2 and Laser.max_lasers < 8:
+                print "Increase lasers to {0}".format(Laser.max_lasers)
+                Laser.max_lasers += 1 
+            elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
+                print "Activate penetration"
+                self.ship.powerup['penetrate'] = True
+            else:
+                print "No more powerups available"
 
     #Main Loop
     def loop(self):
@@ -81,46 +143,19 @@ class Vacuum():
             count = (count+1)%50
             self.clock.tick(50)
 
-
-            #Handle Input Events
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    #exit
-                    return
-                elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
-                    pygame.quit()
-                    quit()
-                    
-                if event.type == KEYDOWN:
-                    self.game_started = True
-                    if event.key == K_ESCAPE:
-                        return    #exit
-                    elif event.key == K_SPACE:
-                        #shoot a laser if the max number is not reached
-                        if Laser.num < Laser.max_lasers:
-                            self.laser = Laser(self.ship)
-                            self.fire.add(self.laser)
-                    elif event.key == K_LEFT:
-                        self.ship.move_left()
-                    elif event.key == K_RIGHT:
-                        self.ship.move_right()
-                    elif event.key == K_UP:
-                        self.ship.move_up()
-                    elif event.key == K_DOWN:
-                        self.ship.move_down()
-
-                if event.type == KEYUP:
-                    if event.key == K_LEFT:
-                        self.ship.stop_move_left()
-                    elif event.key == K_RIGHT:
-                        self.ship.stop_move_right()
-                    elif event.key == K_UP:
-                        self.ship.stop_move_up()
-                    elif event.key == K_DOWN:
-                        self.ship.stop_move_down()
+            #handle input events
+            ok = self.handle_keys()
+            if ok == False:
+                return
 
             if self.game_started == False:
                 start_text = self.font.render('Press any key to start', 2, (0,0,0))
+                self.screen.blit(start_text, (150, 200))
+                pygame.display.flip()
+                continue
+
+            if self.game_paused == 1:
+                start_text = self.font.render('Game paused', 2, (255,255,255))
                 self.screen.blit(start_text, (150, 200))
                 pygame.display.flip()
                 continue
@@ -135,23 +170,8 @@ class Vacuum():
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
-            #powerups got by the player, remove them, play a sound and apply them
-            powerups_obtained  = pygame.sprite.spritecollide(self.ship, self.powerups, True)
-            for powerup_obtained in powerups_obtained:
-                #play powerup sound
-                self.sounds['powerup'].play()
-                #TODO powerup should be processed in ship
-                if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 2:
-                    self.ship.powerup['speedup'] += 0.5 
-                    print "Increase speed to {0}".format(self.ship.powerup['speedup'])
-                elif powerup_obtained.type == 2 and Laser.max_lasers < 8:
-                    print "Increase lasers to {0}".format(Laser.max_lasers)
-                    Laser.max_lasers += 1 
-                elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
-                    print "Activate penetration"
-                    self.ship.powerup['penetrate'] = True
-                else:
-                    print "No more powerups available"
+
+            self.process_powerups()
 
             #check colisions with stage
             if self.level.checkcollide(self.ship.rect):
