@@ -6,7 +6,7 @@ class Laser(pygame.sprite.Sprite):
     #number of lasers in the screen
     num = 0
     #max number of lasers in the screen
-    max_lasers = 3
+    max_lasers = 1
     sound_laser = 0
     move = 15
 
@@ -35,5 +35,5 @@ class Laser(pygame.sprite.Sprite):
         self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
         self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
         self.rect = self.rect.move((self.move, 0))
-        if self.rect.left > 600:
+        if self.rect.left > 1000:
             self.kill()

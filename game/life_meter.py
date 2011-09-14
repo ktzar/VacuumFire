@@ -8,9 +8,9 @@ class LifeMeter(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.life = 10
         self.rect = pygame.Rect(0,0,20,20)
-        self.rect.top = 10
-        self.rect.left = 350
-#If self.status > 0 is shaking
+        self.rect.top =15 
+        self.rect.left = 450
+        #If self.status > 0 is shaking
         self.status = 0
 
     def shake(self):
@@ -22,7 +22,7 @@ class LifeMeter(pygame.sprite.Sprite):
         else:
             pos = pygame.Rect(0,0,140,20)
         self.image, foo = utils.load_image_sprite('life.gif', rect=pos)
-#reduce status until 0 to shake
+        #reduce status until 0 to shake
         if self.status>0:
             if self.status % 2 == 0:
                 self.rect = self.rect.move((0,2))
