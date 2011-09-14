@@ -39,7 +39,7 @@ class Vacuum():
         self.sounds['music'] = utils.load_sound('archivo.ogg')
         self.sounds['warning'] = utils.load_sound('warning.wav')
         self.sounds['powerup'] = utils.load_sound('powerup.wav')
-        #self.sounds['music'].play()
+        self.sounds['music'].play()
         #Create The Backgound
         self.background = Background(self.screen.get_size())
         #game variables
@@ -140,7 +140,7 @@ class Vacuum():
         count = 0
         while 1:
             count = (count+1)%50
-            self.clock.tick(50)
+            self.clock.tick(25)
 
             #handle input events
             ok = self.handle_keys()
