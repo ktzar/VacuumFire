@@ -28,8 +28,9 @@ class Laser(pygame.sprite.Sprite):
 
     def kill(self):
         #Remove the laser from the groups and decrease the lasers on screen
+        if Laser.num > 0:
+            Laser.num-=1
         pygame.sprite.Sprite.kill(self)
-        Laser.num-=1
 
     def update(self):
         self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])

@@ -11,6 +11,7 @@ from stage      import Stage
 from explosion  import Explosion
 from life_meter import LifeMeter
 from background import Background
+from meters     import *
 
 
 class Vacuum():
@@ -52,8 +53,12 @@ class Vacuum():
 
         #The player's ship
         self.ship = Ship()
-        #The player's ship
+        #The dash indicators
         self.lifemeter = LifeMeter()
+        self.powerup_speed  = SpeedMeter(pygame.Rect(500,400,0,0))
+        self.powerup_weapon = WeaponMeter(pygame.Rect(540,400,0,0))
+        self.powerup_buddy  = BuddyMeter(pygame.Rect(580,400,0,0))
+
         self.player    = pygame.sprite.RenderPlain((self.ship))
         #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
@@ -65,6 +70,7 @@ class Vacuum():
         self.hud         = pygame.sprite.Group()
         self.explosions  = pygame.sprite.Group()
         self.hud.add(self.lifemeter)
+        self.hud.add((self.powerup_speed, self.powerup_weapon, self.powerup_buddy))
         #The level
         self.level = Stage('level_1')
         self.font = utils.load_font('4114blasterc.ttf', 36)
@@ -92,6 +98,7 @@ class Vacuum():
                 elif event.key == K_SPACE:
                     #shoot a laser if the max number is not reached
                     if Laser.num < Laser.max_lasers:
+                        print "There's {0} lasers in the screen and the max is {1}".format(Laser.num, Laser.max_lasers)
                         self.laser = Laser(self.ship)
                         self.fire.add(self.laser)
                 elif event.key == K_LEFT:
@@ -123,13 +130,16 @@ class Vacuum():
         for powerup_obtained in powerups_obtained:
             #play powerup sound
             self.sounds['powerup'].play()
+            self.score+=powerup_obtained.value
             #TODO powerup should be processed in ship
-            if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 2:
-                self.ship.powerup['speedup'] += 0.5 
+            if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
+                self.ship.powerup['speedup'] += 1 
+                self.powerup_speed.set_status(self.ship.powerup['speedup'])
                 print "Increase speed to {0}".format(self.ship.powerup['speedup'])
-            elif powerup_obtained.type == 2 and Laser.max_lasers < 8:
-                print "Increase lasers to {0}".format(Laser.max_lasers)
+            elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
+                self.powerup_weapon.set_status(Laser.max_lasers)
+                print "Increase lasers to {0}".format(Laser.max_lasers)
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
                 print "Activate penetration"
                 self.ship.powerup['penetrate'] = True
