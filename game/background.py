@@ -12,6 +12,7 @@ class Background(pygame.Surface):
         self.screen = screen
         self.fill((250, 250, 250))
         self.back_image, self.back_rect = utils.load_image('background.jpg');
+        self.back_image_alpha, self.back_rect_alpha = utils.load_image('background_alpha.png');
         self.warning_image, self.warning_rect = utils.load_image('warning.png');
         self.back_rect_init = self.back_rect.copy()
         self.status = Background.IDLE
@@ -27,9 +28,12 @@ class Background(pygame.Surface):
     def update(self):
 
         self.counter = self.counter + 1
-        if self.counter%2 ==0:
+        if self.counter%3 ==0:
             self.back_rect = self.back_rect.move((-1,0))
+        if self.counter%2 ==0:
+            self.back_rect_alpha = self.back_rect_alpha.move((-1,0))
         self.blit(self.back_image, self.back_rect)
+        self.blit(self.back_image_alpha, self.back_rect_alpha)
 
         if self.status == Background.WARNING:
             if self.status_count % 2 == 0:

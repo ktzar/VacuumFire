@@ -10,10 +10,15 @@ class Explosion(pygame.sprite.Sprite):
         self.rect.left = rect.left
         self.status = 0
         self.max_status = 9
+        self.images = []
+        for i in range(self.max_status):
+            pos = pygame.Rect(0,(i)*52,64,52)
+            image, foo = utils.load_image_sprite('explosion.gif', rect=pos)
+            image.set_alpha(60)
+            self.images.append(image)
 
     def update(self):
-        pos = pygame.Rect(0,(self.status)*52,64,52)
-        self.image, foo = utils.load_image_sprite('explosion.gif', rect=pos)
+        self.image = self.images[self.status]
         self.status+=1
         if self.status == self.max_status:
             self.kill()
