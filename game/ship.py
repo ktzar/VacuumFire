@@ -50,9 +50,9 @@ class Ship(pygame.sprite.Sprite):
             self.x_momentum = 0
 
         if self.status==Ship.UP and self.y_momentum > -self.max_y_momentum:
-            self.y_momentum-=self.momentum_delta
+            self.y_momentum-=self.momentum_delta*1.4
         if self.status==Ship.DOWN and self.y_momentum < self.max_y_momentum:
-            self.y_momentum+=self.momentum_delta
+            self.y_momentum+=self.momentum_delta*1.4
         if (self.y_momentum < 0 and self.rect.top > 0) or (self.y_momentum > 0 and self.rect.top < 480-self.rect.height):
             self.rect = self.rect.move((0, self.y_momentum/(6-self.powerup['speedup'])))
         self.y_momentum *= self.decceleration

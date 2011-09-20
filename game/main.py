@@ -94,11 +94,11 @@ class Vacuum():
             if event.type == KEYDOWN:
                 self.game_started = True
                 if event.key == K_ESCAPE:
-                    return false   #exit
+                    return False   #exit
                 elif event.key == K_SPACE:
                     #shoot a laser if the max number is not reached
                     if Laser.num < Laser.max_lasers:
-                        print "There's {0} lasers in the screen and the max is {1}".format(Laser.num, Laser.max_lasers)
+                        #print "There's {0} lasers in the screen and the max is {1}".format(Laser.num, Laser.max_lasers)
                         self.laser = Laser(self.ship)
                         self.fire.add(self.laser)
                 elif event.key == K_LEFT:
@@ -135,7 +135,7 @@ class Vacuum():
             if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
                 self.powerup_speed.set_status(self.ship.powerup['speedup'])
-                print "Increase speed to {0}".format(self.ship.powerup['speedup'])
+                #print "Increase speed to {0}".format(self.ship.powerup['speedup'])
             elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
                 self.powerup_weapon.set_status(Laser.max_lasers)
@@ -145,6 +145,42 @@ class Vacuum():
                 self.ship.powerup['penetrate'] = True
             else:
                 print "No more powerups available"
+
+    def process_stagecollisions(self):
+        damage = []
+        #check colisions with stage
+        if self.level.checkcollide(self.ship.rect):
+            #add some fancy explosions in the damage area
+            self.explosions.add(Explosion(pygame.Rect(self.ship.rect.x,self.ship.rect.y,0,0)))
+            damage.append(1)
+        return damage
+
+    def process_damage(self, damage):
+        #Apply damages to the player
+        if len(damage) > 0:
+            self.background.warning()
+            self.ship.damage()
+            self.lifemeter.shake()
+            self.explosions.add(Explosion(self.ship.rect))
+            self.sounds['warning'].play()
+            self.lifemeter.life = self.ship.life
+            if self.lifemeter.life < 1:
+                self.game_finished = True
+                self.sounds['warning'].stop()
+
+    def process_killedaliens(self):
+        #aliens hit by the fire, remove them
+        penetration = self.ship.powerup['penetrate']
+        for fireball in self.fire:
+            hit = pygame.sprite.spritecollide(fireball, self.enemies, True)
+            for dead in hit:
+                if dead.has_powerup():
+                    powerup = Powerup(dead.rect, dead.value)
+                    self.powerups.add(powerup)
+                self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
+                self.score+=dead.value*1000
+                if penetration == False:
+                    fireball.kill()
 
     #Main Loop
     def loop(self):
@@ -170,54 +206,26 @@ class Vacuum():
                 pygame.display.flip()
                 continue
 
-            new_enemies = self.level.getenemies() 
-
-            for enemy_y in new_enemies:
-                #if random.randint(0,50) == 0:
-                alien = Alien(enemy_y)
-                alien.set_target(self.ship)
-                self.enemies.add(alien)
+            try:
+                new_enemies = self.level.getenemies() 
+                for enemy_y in new_enemies:
+                    alien = Alien(enemy_y)
+                    alien.set_target(self.ship)
+                    self.enemies.add(alien)
+            except:
+                self.game_finished = True
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
 
             self.process_powerups()
-
-            #check colisions with stage
-            if self.level.checkcollide(self.ship.rect):
-                #add some fancy explosions in the damage area
-                self.explosions.add(Explosion(pygame.Rect(self.ship.rect.x,self.ship.rect.y,0,0)))
+            collisions = self.process_stagecollisions()
+            for collision in collisions:
                 damage.append(1)
-
-            #Apply damages to the player
-            if len(damage) > 0:
-                self.background.warning()
-                self.ship.damage()
-                self.lifemeter.shake()
-                self.explosions.add(Explosion(self.ship.rect))
-                self.sounds['warning'].play()
-                self.lifemeter.life = self.ship.life
-                if self.lifemeter.life < 1:
-                    self.game_finished = True
-                    self.sounds['warning'].stop()
-
-            #print (pygame.sprite.spritecollide(ship, level, True))
-
-            #aliens hit by the fire, remove them
-            penetration = self.ship.powerup['penetrate']
-            for fireball in self.fire:
-                hit = pygame.sprite.spritecollide(fireball, self.enemies, True)
-                for dead in hit:
-                    if dead.has_powerup():
-                        powerup = Powerup(dead.rect, dead.value)
-                        self.powerups.add(powerup)
-                    self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
-                    self.score+=dead.value*1000
-                    if penetration == False:
-                        fireball.kill()
+            self.process_damage(damage)
+            self.process_killedaliens()
 
             #draw the level
-
             all_sprites = pygame.sprite.Group()
             all_sprites.add(self.player.sprites())
             all_sprites.add(self.enemies.sprites())
