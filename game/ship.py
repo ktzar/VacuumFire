@@ -20,7 +20,7 @@ class Ship(pygame.sprite.Sprite):
     x_momentum = 0
 
     #speed of the ship
-    momentum_delta = 2
+    momentum_delta = 5
     #Max speed of the ship
     max_x_momentum = 10
     #Initial life counter
