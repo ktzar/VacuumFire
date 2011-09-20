@@ -20,7 +20,7 @@ class Ship(pygame.sprite.Sprite):
     x_momentum = 0
 
     #speed of the ship
-    momentum_delta = 5
+    momentum_delta = 2
     #Max speed of the ship
     max_x_momentum = 10
     #Initial life counter
@@ -35,6 +35,7 @@ class Ship(pygame.sprite.Sprite):
         self.image, self.rect = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,0,64,64))
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
+        self.rect.top = 300
         #Initial position
         self.powerup = { 'penetrate' : False, 'speedup' : 0 }
 
@@ -50,9 +51,9 @@ class Ship(pygame.sprite.Sprite):
             self.x_momentum = 0
 
         if self.status==Ship.UP and self.y_momentum > -self.max_y_momentum:
-            self.y_momentum-=self.momentum_delta*1.4
+            self.y_momentum-=self.momentum_delta
         if self.status==Ship.DOWN and self.y_momentum < self.max_y_momentum:
-            self.y_momentum+=self.momentum_delta*1.4
+            self.y_momentum+=self.momentum_delta
         if (self.y_momentum < 0 and self.rect.top > 0) or (self.y_momentum > 0 and self.rect.top < 480-self.rect.height):
             self.rect = self.rect.move((0, self.y_momentum/(6-self.powerup['speedup'])))
         self.y_momentum *= self.decceleration

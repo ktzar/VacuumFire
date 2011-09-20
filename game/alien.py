@@ -6,7 +6,7 @@ import math
 class Alien(pygame.sprite.Sprite):
     #bomb sound
     sound_bomb = None
-    ratio_powerup = 15
+    ratio_powerup = 1
 
     def __init__(self, top = -1):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
