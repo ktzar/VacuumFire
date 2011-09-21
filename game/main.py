@@ -27,7 +27,7 @@ class Vacuum():
            a loop until the function returns."""
         #Initialize Everything
         pygame.init()
-        self.screen = pygame.display.set_mode((640, 480))
+        self.screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF)
         pygame.display.set_caption('VacuumFire')
         pygame.mouse.set_visible(0)
         #icon

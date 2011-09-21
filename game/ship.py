@@ -32,10 +32,10 @@ class Ship(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.image, self.rect = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,0,64,64))
+        self.image, self.rect = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
-        self.rect.top = 300
+        self.rect.top = self.area.height / 2 - self.rect.height / 2
         #Initial position
         self.powerup = { 'penetrate' : False, 'speedup' : 0 }
 
@@ -62,11 +62,11 @@ class Ship(pygame.sprite.Sprite):
 
         #change image depending on vertical momentum
         if self.y_momentum > 4:
-            self.image, foo = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,128,64,64))
+            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,86,54,43))
         elif self.y_momentum < -4:
-            self.image, foo = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,64,64,64))
+            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,43,54,43))
         else:
-            self.image, foo = utils.load_image_sprite('spaceship.gif', rect=pygame.Rect(0,0,64,64))
+            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
 
     def damage(self):
         self.life-=1
