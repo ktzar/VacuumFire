@@ -19,7 +19,7 @@ class Laser(pygame.sprite.Sprite):
         Laser.num+=1
         self.owner = owner
         #this makes the animation
-        self.images = ('laser.gif', 'laser.gif', 'laser2.gif', 'laser2.gif', 'laser.gif', 'laser2.gif')
+        self.images = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
         self.image_anim_counter = 0
         self.image, self.rect = utils.load_image(self.images[0], -1)
         self.rect = owner.rect.copy()
@@ -34,6 +34,7 @@ class Laser(pygame.sprite.Sprite):
 
     def update(self):
         self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
+        self.image.set_colorkey((0,0,0))
         self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
         self.rect = self.rect.move((self.move, 0))
         if self.rect.left > 1000:

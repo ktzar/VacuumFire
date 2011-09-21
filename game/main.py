@@ -79,6 +79,7 @@ class Vacuum():
 
         self.game_started = False
         self.game_finished = False
+        self.level_finished = False
 
     def handle_keys(self):
         #Handle Input Events
@@ -186,7 +187,7 @@ class Vacuum():
         count = 0
         while 1:
             count = (count+1)%50
-            self.clock.tick(50)
+            self.clock.tick(200)
 
             #handle input events
             ok = self.handle_keys()
@@ -212,7 +213,7 @@ class Vacuum():
                     alien.set_target(self.ship)
                     self.enemies.add(alien)
             except:
-                self.game_finished = True
+                self.level_finished = True
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
@@ -248,7 +249,12 @@ class Vacuum():
             self.screen.blit(text_shadow, (12, 12))
             self.screen.blit(text, (10, 10))
 
-            if self.game_finished == True:
+            if self.level_finished == True:
+                level_text = self.font.render("Level finished", 2, (255, 255, 255))
+                self.screen.blit(level_text, (280, 200))
+                level_text = self.font.render("Score {0}".format(self.score), 2, (255, 255, 255))
+                self.screen.blit(level_text, (280, 230))
+            elif self.game_finished == True:
                 gameover_text = self.font.render("Game Over", 2, (255, 255, 255))
                 self.screen.blit(gameover_text, (280, 200))
                 gameover_text = self.font.render("Press Esc", 2, (255, 255, 255))

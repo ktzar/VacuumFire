@@ -6,7 +6,7 @@ class Powerup(pygame.sprite.Sprite):
 
     def __init__(self, rect, value):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
-        self.rect = pygame.Rect(0,0,64,52)
+        self.rect = pygame.Rect(0,0,26,26)
         self.rect.top = rect.top
         self.rect.left = rect.left
         self.age = 0
@@ -22,7 +22,7 @@ class Powerup(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.kill()
             return
-        pos = pygame.Rect((self.status)*28, self.type*28, 28,28)
+        pos = pygame.Rect((self.status)*28, self.type*28, 26,26)
         self.image, foo = utils.load_image_sprite('powerups.png', rect=pos)
         if self.age % 4 != 0:
             return

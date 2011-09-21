@@ -15,7 +15,7 @@ class Ship(pygame.sprite.Sprite):
     #User interactions modify this, current speed of movement (positive->up or negative->down)
     y_momentum = 0
     #Max speed of the ship
-    max_y_momentum = 10
+    max_y_momentum = 20
     #User interactions modify this, current speed of movement (positive->up or negative->down)
     x_momentum = 0
 
@@ -46,7 +46,7 @@ class Ship(pygame.sprite.Sprite):
             self.x_momentum+=self.momentum_delta
         if (self.x_momentum < 0 and self.rect.left > 0) or (self.x_momentum > 0 and self.rect.left < 640-self.rect.width):
             self.rect = self.rect.move((self.x_momentum/(6-self.powerup['speedup']), 0))
-        self.x_momentum *= self.decceleration
+        self.x_momentum *= self.decceleration - (self.powerup['speedup'] * 0.04)
         if abs(self.x_momentum) < 1:
             self.x_momentum = 0
 
@@ -56,7 +56,7 @@ class Ship(pygame.sprite.Sprite):
             self.y_momentum+=self.momentum_delta
         if (self.y_momentum < 0 and self.rect.top > 0) or (self.y_momentum > 0 and self.rect.top < 480-self.rect.height):
             self.rect = self.rect.move((0, self.y_momentum/(6-self.powerup['speedup'])))
-        self.y_momentum *= self.decceleration
+        self.y_momentum *= self.decceleration - (self.powerup['speedup'] * 0.04)
         if abs(self.y_momentum) < 1:
             self.y_momentum = 0
 

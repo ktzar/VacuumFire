@@ -6,7 +6,7 @@ import math
 class Alien(pygame.sprite.Sprite):
     #bomb sound
     sound_bomb = None
-    ratio_powerup = 1
+    ratio_powerup = 3 
 
     def __init__(self, top = -1):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
@@ -14,6 +14,7 @@ class Alien(pygame.sprite.Sprite):
             Alien.sound_bomb = utils.load_sound('bomb-02.wav')
         self.images = ('alien1.gif', 'alien2.gif', 'alien3.gif', 'alien4.gif')
         self.cycle = 0
+        self.cycle_2 = 0
         self.value = random.randint(0,len(self.images)-1)
         self.image, self.rect = utils.load_image(self.images[self.value], -1)
         self.contains_powerup = (random.randint(1,Alien.ratio_powerup) == 1)
@@ -25,7 +26,9 @@ class Alien(pygame.sprite.Sprite):
         self.move           = -random.randint(2,7)
         self.agressivity    = random.randint(1,5)
         self.amplitude      = random.randint(1,5)
+        self.amplitude_2    = random.randint(0,5)
         self.frequency      = random.random()*0.1+0.05
+        self.frequency_2    = random.random()*0.2
         self.target = None
 
     def set_target(self, target):
@@ -37,12 +40,13 @@ class Alien(pygame.sprite.Sprite):
 
     def update(self):
         self.cycle+=self.frequency
-        self.rect = self.rect.move((self.move, self.amplitude*math.sin(self.cycle)))
+        self.cycle_2+=self.frequency_2
+        self.rect = self.rect.move((self.move, self.amplitude_2*math.sin(self.cycle_2)+self.amplitude*math.sin(self.cycle)))
         if self.rect.left < 0:
             self.kill()
         #move vertically towards the target
         if self.target != None:
-            self.rect = self.rect.move((0, -(self.rect.top-self.target.rect.top)*(self.agressivity/100)))
+            self.rect = self.rect.move((0, -(self.rect.top-self.target.rect.top)*(self.agressivity/10)))
 
     def kill(self):
         pygame.sprite.Sprite.kill(self)

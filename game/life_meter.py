@@ -8,8 +8,8 @@ class LifeMeter(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.life = 10
         self.rect = pygame.Rect(0,0,20,20)
-        self.rect.top =15 
-        self.rect.left = 450
+        self.rect.top = 460 
+        self.rect.left = 490
         #If self.status > 0 is shaking
         self.status = 0
 
