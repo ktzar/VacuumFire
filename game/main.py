@@ -138,6 +138,7 @@ class Vacuum():
                 #print "Increase speed to {0}".format(self.ship.powerup['speedup'])
             elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
+                Laser.move += 2 
                 self.powerup_weapon.set_status(Laser.max_lasers)
                 print "Increase lasers to {0}".format(Laser.max_lasers)
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
@@ -149,9 +150,10 @@ class Vacuum():
     def process_stagecollisions(self):
         damage = []
         #check colisions with stage
-        if self.level.checkcollide(self.ship.rect):
+        side = self.level.checkcollide(self.ship.rect)
+        if side != 0:
             #add some fancy explosions in the damage area
-            self.explosions.add(Explosion(pygame.Rect(self.ship.rect.x,self.ship.rect.y,0,0)))
+            self.explosions.add(Explosion(pygame.Rect(self.ship.rect.x,self.ship.rect.y + side *self.ship.rect.height,0,0)))
             damage.append(1)
         return damage
 

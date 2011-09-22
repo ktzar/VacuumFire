@@ -13,10 +13,14 @@ class Alien(pygame.sprite.Sprite):
         if Alien.sound_bomb == None:
             Alien.sound_bomb = utils.load_sound('bomb-02.wav')
         self.images = ('alien1.gif', 'alien2.gif', 'alien3.gif', 'alien4.gif')
+        self.age = 0
         self.cycle = 0
         self.cycle_2 = 0
         self.value = random.randint(0,len(self.images)-1)
-        self.image, self.rect = utils.load_image(self.images[self.value], -1)
+        if self.value == 3:
+            self.image, self.rect = utils.load_image_sprite("alien4.gif", rect=pygame.Rect(0,0,58,34))
+        else:
+            self.image, self.rect = utils.load_image(self.images[self.value], -1)
         self.contains_powerup = (random.randint(1,Alien.ratio_powerup) == 1)
         if top == -1:
             self.rect.top = random.randint(0,480)
@@ -39,6 +43,9 @@ class Alien(pygame.sprite.Sprite):
         return self.contains_powerup
 
     def update(self):
+        self.age += 1
+        if self.value == 3:
+            self.image, rect = utils.load_image_sprite("alien4.gif", rect=pygame.Rect(self.age%12*58,0,58,34))
         self.cycle+=self.frequency
         self.cycle_2+=self.frequency_2
         self.rect = self.rect.move((self.move, self.amplitude_2*math.sin(self.cycle_2)+self.amplitude*math.sin(self.cycle)))

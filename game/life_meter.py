@@ -14,7 +14,7 @@ class LifeMeter(pygame.sprite.Sprite):
         self.status = 0
 
     def shake(self):
-        self.status = 50
+        self.status =49 
 
     def update(self):
         if self.life > 0:
@@ -29,4 +29,6 @@ class LifeMeter(pygame.sprite.Sprite):
             else:
                 self.rect = self.rect.move((0,-2))
             self.status-=1
+        else:
+            self.rect.top = 460 
 
