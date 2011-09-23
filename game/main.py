@@ -189,7 +189,7 @@ class Vacuum():
         count = 0
         while 1:
             count = (count+1)%50
-            self.clock.tick(200)
+            self.clock.tick(50)
 
             #handle input events
             ok = self.handle_keys()
