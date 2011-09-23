@@ -37,10 +37,10 @@ class Vacuum():
         self.game_paused = False
         #sounds
         self.sounds = {};
-        self.sounds['music'] = utils.load_sound('archivo.ogg')
+        self.sounds['music'] = utils.load_sound('level_1.ogg')
         self.sounds['warning'] = utils.load_sound('warning.wav')
         self.sounds['powerup'] = utils.load_sound('powerup.wav')
-        #self.sounds['music'].play()
+        self.sounds['music'].play()
         #Create The Backgound
         self.background = Background(self.screen.get_size())
         #game variables
