@@ -20,6 +20,7 @@ class Intro():
         pygame.init()
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF)
+        self.size = self.screen.get_size()
         self.font = utils.load_font('4114blasterc.ttf', 36)
         pygame.display.set_caption('VacuumFire')
         pygame.mouse.set_visible(0)
@@ -30,11 +31,11 @@ class Intro():
         self.age = 0
 
         #sounds
-        self.music = utils.load_sound('archivo.ogg')
-        #self.music.play()
+        self.music = utils.load_sound('intro.ogg')
+        self.music.play()
 
-        self.background, foo    = utils.load_image('intro_bg_1.jpg')
-        self.parallax, foo      = utils.load_image('intro_bg_2.png')
+        self.background, self.background_rect    = utils.load_image('intro_bg_1.jpg')
+        self.parallax, self.parallax_rect        = utils.load_image('intro_bg_2.png')
         self.logo, foo          = utils.load_image('intro_logo.png')
 
         self.screen.blit(self.background, (0, 0))
@@ -43,7 +44,6 @@ class Intro():
 
     #Main Loop
     def loop(self):
-        count = 0
         while 1:
             for event in pygame.event.get():
                 if event.type == QUIT:
@@ -53,7 +53,6 @@ class Intro():
                     pygame.quit()
                     quit()
 
-            count = (count+1)%50
             self.clock.tick(50)
 
             init_text = 'Press any key'
@@ -64,9 +63,18 @@ class Intro():
                 text_color = (255, 255, 255)
             text = self.font.render(init_text, 1, text_color)
 
-
-            self.screen.blit(self.background, (-self.age, 0))
-            self.screen.blit(self.parallax, (-self.age*2, 0))
+            if self.age%2 == 0:
+                self.background_rect = self.background_rect.move((-1,0))
+            if self.age%3 == 0:
+                self.parallax_rect = self.parallax_rect.move((-1,0))
+            #rotate background
+            if -self.background_rect.left > self.background_rect.width - self.size[0] :
+                self.background_rect.left = 0
+            if -self.parallax_rect.left > self.parallax_rect.width - self.size[0] :
+                self.parallax_rect.left = 0
+            
+            self.screen.blit(self.background, self.background_rect)
+            self.screen.blit(self.parallax, self.parallax_rect)
             self.screen.blit(self.logo, (0, 0))
             self.screen.blit(text, (200, 300))
 
