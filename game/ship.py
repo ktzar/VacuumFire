@@ -10,7 +10,7 @@ class Ship(pygame.sprite.Sprite):
     UP = 3
     DOWN = 4
 
-    decceleration = 0.93
+    decceleration = 0.945
     topleft = 10, 10
     #User interactions modify this, current speed of movement (positive->up or negative->down)
     y_momentum = 0
@@ -20,7 +20,7 @@ class Ship(pygame.sprite.Sprite):
     x_momentum = 0
 
     #speed of the ship
-    momentum_delta = 2
+    momentum_delta = 4
     #Max speed of the ship
     max_x_momentum = 10
     #Initial life counter
