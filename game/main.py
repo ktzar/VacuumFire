@@ -28,6 +28,7 @@ class Vacuum():
         #Initialize Everything
         pygame.init()
         self.screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF)
+        pygame.display.toggle_fullscreen()
         pygame.display.set_caption('VacuumFire')
         pygame.mouse.set_visible(0)
         #icon
