@@ -23,8 +23,8 @@ class Main():
         icon, foo = utils.load_image('icon.png')
         pygame.display.set_icon(icon)
 
-        intro = Intro(screen)
-        vacuum = Vacuum(screen)
+        intro = Intro(self.screen)
+        vacuum = Vacuum(self.screen)
         self.clock = pygame.time.Clock()
 
         #Load musics
