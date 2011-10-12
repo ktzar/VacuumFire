@@ -12,6 +12,7 @@ from explosion  import Explosion
 from life_meter import LifeMeter
 from background import Background
 from meters     import *
+from sprites    import *
 
 class Vacuum():
 
@@ -26,7 +27,7 @@ class Vacuum():
         #Create The Backgound
         self.background = Background(self.screen.get_size())
         #game variables
-        self.score = 0
+        self.score = Score_Meter((10,10))
         #Display The Background
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()
@@ -51,6 +52,7 @@ class Vacuum():
         self.hud         = pygame.sprite.Group()
         self.explosions  = pygame.sprite.Group()
         self.hud.add(self.lifemeter)
+        self.hud.add(self.score)
         self.hud.add((self.powerup_speed, self.powerup_weapon, self.powerup_buddy))
         #The level
         self.level = Stage('level_1')
@@ -111,7 +113,7 @@ class Vacuum():
         for powerup_obtained in powerups_obtained:
             #play powerup sound
             self.sounds['powerup'].play()
-            self.score+=powerup_obtained.value
+            self.score.add_score(powerup_obtained.value)
             #TODO powerup should be processed in ship
             if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
@@ -161,7 +163,8 @@ class Vacuum():
                     powerup = Powerup(dead.rect, dead.value)
                     self.powerups.add(powerup)
                 self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
-                self.score+=dead.value*1000
+                self.score.add_score(dead.value*1000)
+                self.hud.add(Flying_Score( dead.rect, dead.value*1000 ))
                 if penetration == False:
                     fireball.kill()
 
@@ -221,21 +224,12 @@ class Vacuum():
 
             #Move and draw the background
 
-            score_text = 'Score: {0}'.format((self.score))
-
-            text = self.font.render(score_text, 1, (255, 255, 255))
-            text_shadow = self.font.render(score_text, 1, (0,0,0))
-
             self.screen.blit(self.background, (0, 0))
             self.screen.blit(self.level, (0, 0))
-            self.screen.blit(text_shadow, (12, 12))
-            self.screen.blit(text, (10, 10))
 
             if self.level_finished == True:
                 level_text = self.font.render("Level finished", 2, (255, 255, 255))
                 self.screen.blit(level_text, (280, 200))
-                level_text = self.font.render("Score {0}".format(self.score), 2, (255, 255, 255))
-                self.screen.blit(level_text, (280, 230))
             elif self.game_finished == True:
                 gameover_text = self.font.render("Game Over", 2, (255, 255, 255))
                 self.screen.blit(gameover_text, (280, 200))
