@@ -26,6 +26,8 @@ class Stage(pygame.Surface):
         self.colors = { \
             "grass":(0,0,0,255), \
             "enemies":(255,0,0,255), \
+            "miniboss":(0,0,255,255), \
+            "boss":(0,255,0,255), \
             'bg':(229,229,229,255) \
         }
 
@@ -156,7 +158,9 @@ class Stage(pygame.Surface):
 #return the enemies in the current scroll position (self.scrolled + self.ratio).
 #only return enemies if self.scrolled%self.ratio == 0 (each pixel in the stage is one enemy, not self.ratio
     def getenemies(self):
-        enemies = []
+        enemies     = []
+        minibosses  = []
+        bosses      = []
         surf = pygame.display.get_surface()
         screen_width = int(surf.get_width() / self.ratio)
 
@@ -165,7 +169,13 @@ class Stage(pygame.Surface):
                 x = int(self.scrolled/self.ratio)+screen_width
                 if self.level_data.get_at((x, y)) == self.colors["enemies"]:
                     enemies.append(y*self.ratio)
-        return enemies
+                if self.level_data.get_at((x, y)) == self.colors["miniboss"]:
+                    #So we don't load it again (when there's a miniboss present the stage doesn't scroll
+                    self.level_data.set_at((x, y), self.colors["bg"])
+                    minibosses.append(y*self.ratio)
+                if self.level_data.get_at((x, y)) == self.colors["boss"]:
+                    bosses.append(y*self.ratio)
+        return (enemies,minibosses, bosses)
         
 
 

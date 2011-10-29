@@ -6,7 +6,7 @@ import utils
 from ship       import Ship
 from laser      import Laser
 from powerup    import Powerup
-from alien      import Alien
+from alien      import *
 from stage      import Stage
 from explosion  import Explosion
 from life_meter import LifeMeter
@@ -44,10 +44,11 @@ class Vacuum():
         self.player    = pygame.sprite.RenderPlain((self.ship))
         #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
+        self.minibosses = pygame.sprite.Group()
         #group that stores all powerups
-        self.powerups    = pygame.sprite.Group()
+        self.powerups   = pygame.sprite.Group()
         #group that stores all the lasers the player shoots
-        self.fire        = pygame.sprite.Group()
+        self.fire       = pygame.sprite.Group()
         #group for information sprites in the screen, should be rendered the last one
         self.hud         = pygame.sprite.Group()
         self.explosions  = pygame.sprite.Group()
@@ -157,7 +158,12 @@ class Vacuum():
         #aliens hit by the fire, remove them
         penetration = self.ship.powerup['penetrate']
         for fireball in self.fire:
-            hit = pygame.sprite.spritecollide(fireball, self.enemies, True)
+            hit     = pygame.sprite.spritecollide(fireball, self.enemies, True)
+            enemies_hit = pygame.sprite.spritecollide(fireball, self.minibosses, False)
+            for strike in enemies_hit:
+                strike.hit()
+
+            hit.extend(enemies_hit)
             for dead in hit:
                 if dead.has_powerup():
                     powerup = Powerup(dead.rect, dead.value)
@@ -192,17 +198,22 @@ class Vacuum():
                 continue
 
             try:
-                new_enemies = self.level.getenemies() 
+                (new_enemies, new_minibosses, new_bosses) = self.level.getenemies() 
                 for enemy_y in new_enemies:
                     alien = Alien(enemy_y)
                     alien.set_target(self.ship)
                     self.enemies.add(alien)
+
+                for enemy_y in new_minibosses:
+                    miniboss = Miniboss(enemy_y)
+                    miniboss.set_target(self.ship)
+                    self.minibosses.add(miniboss)
+
             except:
                 self.level_finished = True
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
-
             self.process_powerups()
             collisions = self.process_stagecollisions()
             for collision in collisions:
@@ -214,12 +225,14 @@ class Vacuum():
             all_sprites = pygame.sprite.Group()
             all_sprites.add(self.player.sprites())
             all_sprites.add(self.enemies.sprites())
+            all_sprites.add(self.minibosses.sprites())
             all_sprites.add(self.powerups.sprites())
             all_sprites.add(self.fire.sprites())
             all_sprites.add(self.hud.sprites())
             all_sprites.add(self.explosions.sprites())
             all_sprites.update()
-            self.level.update()
+            if len(self.minibosses.sprites()) == 0:
+                self.level.update()
             self.background.update()
 
             #Move and draw the background
@@ -237,6 +250,7 @@ class Vacuum():
                 self.screen.blit(gameover_text, (280, 230))
             else:
                 all_sprites.draw(self.screen)
+                all_sprites.empty()
 
             #draw all the groups of sprites
 
