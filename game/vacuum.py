@@ -6,7 +6,7 @@ import utils
 from ship       import Ship
 from laser      import Laser
 from powerup    import Powerup
-from alien      import *
+from enemies    import *
 from stage      import Stage
 from explosion  import Explosion
 from life_meter import LifeMeter
