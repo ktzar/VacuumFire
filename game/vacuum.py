@@ -131,6 +131,9 @@ class Vacuum():
             else:
                 print "No more powerups available"
 
+    def add_explosion(self, rect):
+        self.explosions.add(Explosion(rect.copy()))
+
     def process_stagecollisions(self):
         damage = []
         #check colisions with stage
@@ -147,7 +150,7 @@ class Vacuum():
             self.background.warning()
             self.ship.damage()
             self.lifemeter.shake()
-            self.explosions.add(Explosion(self.ship.rect))
+            self.add_explosion(self.ship.rect)
             self.sounds['warning'].play()
             self.lifemeter.life = self.ship.life
             if self.lifemeter.life < 1:
@@ -159,7 +162,12 @@ class Vacuum():
         penetration = self.ship.powerup['penetrate']
         for fireball in self.fire:
             hit     = pygame.sprite.spritecollide(fireball, self.enemies, True)
-            enemies_hit = pygame.sprite.spritecollide(fireball, self.minibosses, False)
+            #Check collisions with masks since the minibosses can have funny shapes
+            enemies_hit = []
+            for miniboss in self.minibosses:
+                if pygame.sprite.collide_mask(fireball, miniboss):
+                    enemies_hit.append(miniboss)
+
             for strike in enemies_hit:
                 strike.hit()
 
@@ -168,7 +176,7 @@ class Vacuum():
                 if dead.has_powerup():
                     powerup = Powerup(dead.rect, dead.value)
                     self.powerups.add(powerup)
-                self.explosions.add(Explosion(pygame.Rect(dead.rect.x,dead.rect.y,0,0)))
+                self.add_explosion(fireball.rect)
                 self.score.add_score(dead.value*1000)
                 self.hud.add(Flying_Score( dead.rect, dead.value*1000 ))
                 if penetration == False:
@@ -205,7 +213,7 @@ class Vacuum():
                     self.enemies.add(alien)
 
                 for enemy_y in new_minibosses:
-                    miniboss = Miniboss(enemy_y)
+                    miniboss = Miniboss(enemy_y, self)
                     miniboss.set_target(self.ship)
                     self.minibosses.add(miniboss)
 

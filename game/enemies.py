@@ -60,8 +60,10 @@ class Alien(pygame.sprite.Sprite):
         Alien.sound_bomb.play()
 
 class Miniboss(pygame.sprite.Sprite):
-    def __init__(self, top = -1):
+    def __init__(self, top = -1, stage=False):
+
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.stage = stage
         self.image, self.rect = utils.load_image("miniboss.png")
         if top == -1:
             self.rect.top = random.randint(200,300)
@@ -72,7 +74,7 @@ class Miniboss(pygame.sprite.Sprite):
         self.rect.left  = 640
         self.move       = -2
         self.age        = 0
-        self.life       = 5
+        self.life       = 20
         self.value      = 40
         self.target = None
 
@@ -84,11 +86,8 @@ class Miniboss(pygame.sprite.Sprite):
 
     def hit(self):
         self.life -= 1
-        print "Life:{0}".format(self.life)
 
     def update(self):
-        print self.rect
-        print self.life
         self.age += 1
         if self.life < 0:
             self.kill()
@@ -97,5 +96,13 @@ class Miniboss(pygame.sprite.Sprite):
             self.rect = self.rect.move((-2, 0))
 
     def kill(self):
+        explosion_point = self.rect
+        self.stage.add_explosion(explosion_point)
+        explosion_point.left += explosion_point.width/2
+        self.stage.add_explosion(explosion_point)
+        explosion_point.top += explosion_point.height/2
+        self.stage.add_explosion(explosion_point)
+        explosion_point.top += explosion_point.height/2
+        self.stage.add_explosion(explosion_point)
         pygame.sprite.Sprite.kill(self)
 

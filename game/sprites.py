@@ -13,7 +13,7 @@ class Flying_Score(pygame.sprite.Sprite):
         surf_text = font.render(score, 2, (255,255,255))
         self.image = pygame.Surface(font.size(score))
         self.image.blit(surf_text, (0,0))
-        self.rect = position
+        self.rect = position.copy()
         self.image.set_colorkey((0,0,0))
 
     def update(self):
