@@ -10,7 +10,7 @@ class Ship(pygame.sprite.Sprite):
     UP = 3
     DOWN = 4
 
-    decceleration = 0.945
+    decceleration = 0.95
     topleft = 10, 10
     #User interactions modify this, current speed of movement (positive->up or negative->down)
     y_momentum = 0

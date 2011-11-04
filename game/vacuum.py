@@ -228,7 +228,9 @@ class Vacuum():
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
             damage.extend(pygame.sprite.spritecollide(self.ship, self.enemylasers, True))
-            damage.extend(pygame.sprite.spritecollide(self.ship, self.minibosses, False))
+            for miniboss in self.minibosses:
+                if pygame.sprite.collide_mask(self.ship, miniboss):
+                    damage.append(miniboss)
             self.process_powerups()
             collisions = self.process_stagecollisions()
             for collision in collisions:
