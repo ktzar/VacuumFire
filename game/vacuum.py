@@ -52,6 +52,7 @@ class Vacuum():
         #group for information sprites in the screen, should be rendered the last one
         self.hud         = pygame.sprite.Group()
         self.explosions  = pygame.sprite.Group()
+        self.enemylasers = pygame.sprite.Group()
         self.hud.add(self.lifemeter)
         self.hud.add(self.score)
         self.hud.add((self.powerup_speed, self.powerup_weapon, self.powerup_buddy))
@@ -133,6 +134,9 @@ class Vacuum():
 
     def add_explosion(self, rect):
         self.explosions.add(Explosion(rect.copy()))
+
+    def add_enemylaser(self, laser):
+        self.enemylasers.add(laser)
 
     def process_stagecollisions(self):
         damage = []
@@ -222,6 +226,8 @@ class Vacuum():
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
+            damage  = pygame.sprite.spritecollide(self.ship, self.enemylasers, True)
+            damage  = pygame.sprite.spritecollide(self.ship, self.minibosses, False)
             self.process_powerups()
             collisions = self.process_stagecollisions()
             for collision in collisions:
@@ -236,6 +242,7 @@ class Vacuum():
             all_sprites.add(self.minibosses.sprites())
             all_sprites.add(self.powerups.sprites())
             all_sprites.add(self.fire.sprites())
+            all_sprites.add(self.enemylasers.sprites())
             all_sprites.add(self.hud.sprites())
             all_sprites.add(self.explosions.sprites())
             all_sprites.update()

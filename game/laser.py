@@ -39,3 +39,24 @@ class Laser(pygame.sprite.Sprite):
         self.rect = self.rect.move((self.move, 0))
         if self.rect.left > 1000:
             self.kill()
+
+class EnemyLaser(pygame.sprite.Sprite):
+
+    def __init__(self, source, target):
+        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.image, self.rect = utils.load_image('laserbeam.png')
+        self.target     = target.copy()
+        self.rect.top   = source.top
+        self.rect.left  = source.left
+        self.a_y = (self.rect.top - self.target.top ) / 20
+        self.a_x = (self.rect.left - self.target.left ) / 20
+
+    def update(self):
+        self.rect.left -= self.a_x
+        self.rect.top -= self.a_y
+
+        if self.rect.left < 0:
+            self.kill()
+        
+
+

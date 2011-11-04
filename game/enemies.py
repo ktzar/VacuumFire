@@ -2,6 +2,7 @@ import pygame
 import utils
 import random
 import math
+from laser import EnemyLaser
 
 class Alien(pygame.sprite.Sprite):
     #bomb sound
@@ -76,7 +77,26 @@ class Miniboss(pygame.sprite.Sprite):
         self.age        = 0
         self.life       = 20
         self.value      = 40
+        self.status     = 0 #0:alive, 1:dying, 2:dead
+        self.dead_time  = 0 #the age when the object died, to create certain explosions
+        self.explosions = 30 
         self.target = None
+        #0:no laser, 1: top, 2: bottom
+        self.shooting_sequence = [\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               1,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               2,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               1,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               1,2,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               1,\
+               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\
+               2\
+               ]
 
     def has_powerup(self):
         return False
@@ -89,20 +109,47 @@ class Miniboss(pygame.sprite.Sprite):
 
     def update(self):
         self.age += 1
+        #If the sprite is dying, create one explosion per frame
+        if self.status == 1:
+            self.add_explosion()
+            #The first update when dead, store the age when dead, to create a limited number of explosions
+            if self.dead_time == 0:
+                self.dead_time = self.age
+            if self.age - self.dead_time > self.explosions:
+                self.status = 2
+            #don't shoot
+            return
+
+        if self.status == 2:
+            self.kill();
+            return
+
         if self.life < 0:
-            self.kill()
+            self.status = 1
 
         if self.rect.left > 400:
             self.rect = self.rect.move((-2, 0))
 
-    def kill(self):
-        explosion_point = self.rect
+        #Determine if the enemy shoots or not
+        current_sequence = self.shooting_sequence[self.age%len(self.shooting_sequence)]
+        if current_sequence > 0:
+            laser_pos = self.rect.copy()
+            if current_sequence == 1:
+                laser_pos.left += laser_pos.width/2
+            if current_sequence == 2:
+                laser_pos.left += laser_pos.width/2
+                laser_pos.top += laser_pos.height
+            laser = EnemyLaser(laser_pos, self.stage.ship.rect)
+            self.stage.add_enemylaser(laser)
+
+
+
+    def add_explosion(self):
+        #Random explosion position
+        explosion_point = pygame.Rect(\
+                random.randint(self.rect.left, self.rect.left + self.rect.width), \
+                random.randint(self.rect.top, self.rect.top + self.rect.height), \
+                10,10
+                )
         self.stage.add_explosion(explosion_point)
-        explosion_point.left += explosion_point.width/2
-        self.stage.add_explosion(explosion_point)
-        explosion_point.top += explosion_point.height/2
-        self.stage.add_explosion(explosion_point)
-        explosion_point.top += explosion_point.height/2
-        self.stage.add_explosion(explosion_point)
-        pygame.sprite.Sprite.kill(self)
 
