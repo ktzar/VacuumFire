@@ -1,4 +1,5 @@
 import pygame
+import math
 import utils
 
 """Class that represents the laser that the player shoots"""
@@ -50,6 +51,12 @@ class EnemyLaser(pygame.sprite.Sprite):
         self.rect.left  = source.left
         self.a_y = (self.rect.top - self.target.top ) / 20
         self.a_x = (self.rect.left - self.target.left ) / 20
+        if self.a_y == 0:
+            angle = 0
+        else:
+            angle = math.atan( (self.rect.left - self.target.left ) / (self.rect.top - self.target.top))
+            angle = 90 + angle * 57.32 #from radians
+        self.image = pygame.transform.rotozoom(self.image,angle,1)
 
     def update(self):
         self.rect.left -= self.a_x
