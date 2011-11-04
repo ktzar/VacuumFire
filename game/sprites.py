@@ -39,7 +39,7 @@ class Score_Meter(pygame.sprite.Sprite):
         text = self.font.render(score_text, 1, (255, 255, 255))
         text_shadow = self.font.render(score_text, 1, (0,0,0))
         self.image = pygame.Surface(self.font.size(score_text))
-        self.image.blit(text_shadow, (0,0))
+        self.image.blit(text_shadow, (5,5))
         self.image.blit(text, (0,0))
         self.image.set_colorkey((0,0,0))
 
