@@ -181,8 +181,9 @@ class Vacuum():
                     powerup = Powerup(dead.rect, dead.value)
                     self.powerups.add(powerup)
                 self.add_explosion(fireball.rect)
-                self.score.add_score(dead.value*1000)
-                self.hud.add(Flying_Score( dead.rect, dead.value*1000 ))
+                scored = (1+dead.value)*1000
+                self.score.add_score(scored)
+                self.hud.add(Flying_Score( dead.rect, scored))
                 if penetration == False:
                     fireball.kill()
 
@@ -226,8 +227,8 @@ class Vacuum():
 
             #aliens damaging the player, remove them
             damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
-            damage  = pygame.sprite.spritecollide(self.ship, self.enemylasers, True)
-            damage  = pygame.sprite.spritecollide(self.ship, self.minibosses, False)
+            damage.extend(pygame.sprite.spritecollide(self.ship, self.enemylasers, True))
+            damage.extend(pygame.sprite.spritecollide(self.ship, self.minibosses, False))
             self.process_powerups()
             collisions = self.process_stagecollisions()
             for collision in collisions:

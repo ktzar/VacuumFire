@@ -76,7 +76,7 @@ class Miniboss(pygame.sprite.Sprite):
         self.move       = -2
         self.age        = 0
         self.life       = 20
-        self.value      = 40
+        self.value      = 1
         self.status     = 0 #0:alive, 1:dying, 2:dead
         self.dead_time  = 0 #the age when the object died, to create certain explosions
         self.explosions = 30 
