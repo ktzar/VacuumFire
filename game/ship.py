@@ -25,6 +25,7 @@ class Ship(pygame.sprite.Sprite):
     max_x_momentum = 10
     #Initial life counter
     life = 10
+    max_life = 10
     #'up' or 'down' (for the animation)
     status = ''
     #Ship.LEFT or Ship.RIGHT (for the animation)
@@ -70,6 +71,10 @@ class Ship(pygame.sprite.Sprite):
 
     def damage(self):
         self.life-=1
+
+    def life_up(self):
+        if self.life < self.max_life:
+            self.life += 1
 
     def stop_move_left(self):
         self.x_status = ''

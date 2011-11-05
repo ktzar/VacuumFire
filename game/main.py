@@ -18,6 +18,7 @@ class Main():
         pygame.init()
         self.screen = pygame.display.set_mode((640, 480), pygame.DOUBLEBUF)
         pygame.display.set_caption('VacuumFire')
+        #pygame.display.toggle_fullscreen()
         pygame.mouse.set_visible(0)
         #icon
         icon, foo = utils.load_image('icon.png')

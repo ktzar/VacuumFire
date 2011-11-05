@@ -3,7 +3,7 @@ import utils, random
 from math import *
 
 
-class Flying_Score(pygame.sprite.Sprite):
+class Flying_Label(pygame.sprite.Sprite):
 
     def __init__(self, position, score):
         self.age = 0

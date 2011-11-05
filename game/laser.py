@@ -1,4 +1,5 @@
 import pygame
+import random
 import math
 import utils
 
@@ -49,8 +50,9 @@ class EnemyLaser(pygame.sprite.Sprite):
         self.target     = target.copy()
         self.rect.top   = source.top
         self.rect.left  = source.left
-        self.a_y = (self.rect.top - self.target.top ) / 40
-        self.a_x = (self.rect.left - self.target.left ) / 40
+        #30 and 40 are the min/max boundaries for the random speed 
+        self.a_y = (self.rect.top - self.target.top ) / random.randint(30,40)
+        self.a_x = (self.rect.left - self.target.left ) / random.randint(30,40)
         if self.a_y == 0:
             angle = 0
         else:

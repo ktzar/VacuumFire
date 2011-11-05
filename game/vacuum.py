@@ -117,17 +117,26 @@ class Vacuum():
             self.sounds['powerup'].play()
             self.score.add_score(powerup_obtained.value)
             #TODO powerup should be processed in ship
+            if powerup_obtained.type == 0:
+                self.ship.life_up()
+                self.hud.add(Flying_Label( self.ship.rect, 'Energy!'))
+                self.lifemeter.life = self.ship.life
+
             if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
                 self.powerup_speed.set_status(self.ship.powerup['speedup'])
+                self.hud.add(Flying_Label( self.ship.rect, 'Speed up!'))
                 #print "Increase speed to {0}".format(self.ship.powerup['speedup'])
             elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
                 Laser.move += 2 
                 self.powerup_weapon.set_status(Laser.max_lasers)
                 print "Increase lasers to {0}".format(Laser.max_lasers)
+                self.hud.add(Flying_Label( self.ship.rect, 'More lasers!'))
+
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
                 print "Activate penetration"
+                self.hud.add(Flying_Label( self.ship.rect, 'Penetration!'))
                 self.ship.powerup['penetrate'] = True
             else:
                 print "No more powerups available"
@@ -183,7 +192,7 @@ class Vacuum():
                 self.add_explosion(fireball.rect)
                 scored = (1+dead.value)*1000
                 self.score.add_score(scored)
-                self.hud.add(Flying_Score( dead.rect, scored))
+                self.hud.add(Flying_Label( dead.rect, scored))
                 if penetration == False:
                     fireball.kill()
 

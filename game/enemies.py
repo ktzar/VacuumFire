@@ -125,6 +125,7 @@ class Miniboss(pygame.sprite.Sprite):
                 self.dead_time = self.age
             if self.age - self.dead_time > self.explosions:
                 self.status = 2
+            self.image.set_alpha(max(0,255-(self.age - self.dead_time)*10))
             #don't shoot
             return
 
