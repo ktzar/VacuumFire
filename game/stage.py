@@ -5,6 +5,7 @@ import utils
 
 """Stage"""
 class Stage(pygame.Surface):
+    #TODO Load the cached image if present, and calculate its limits
     def __init__(self, stage_file='level_1'):
         self.level_data, self.rect = utils.load_image('{0}.gif'.format(stage_file))
         self.ratio = 16 #ratio of pixel in stage file / pixel in game
@@ -14,6 +15,8 @@ class Stage(pygame.Surface):
         self.fill((0,0,0))
         self.set_colorkey((0,0,0))
         self.limits = []
+
+        self.overimage, self.overrect = utils.load_image('lava.png')
 
 
         self.image_grass_bl, self.rect_grass = utils.load_image('stage_grass_bl.png')
@@ -32,6 +35,7 @@ class Stage(pygame.Surface):
         }
 
         self.rect = self.rect.move((1,0))
+            
         for x in range(0, self.rect.width-1):
             #will store top and bottom limits and append it to self.limits
             #to control the ship not getting over this
@@ -119,6 +123,16 @@ class Stage(pygame.Surface):
                     self.blit(sprite_chosen, (x*self.ratio, y*self.ratio))
 
             self.limits.append(x_limits)
+        for x in range(self.get_width()):
+            for y in range(self.get_height()):
+                if self.get_at((x,y)) != (0,0,0,255):
+                    new_colour = self.get_at((x,y))
+                    new_over = self.overimage.get_at((x%self.overrect.width,y%self.overrect.height))
+                    new_colour.r = min(new_colour.r + new_over.r,200)
+                    new_colour.g = min(new_colour.g + new_over.g,200)
+                    new_colour.b = min(new_colour.b + new_over.b,200)
+                    self.set_at((x,y), new_colour)
+        utils.save_image('level_1_processed.png', self)
 
     def update(self):
         self.scroll(-1,0)

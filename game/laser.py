@@ -49,8 +49,8 @@ class EnemyLaser(pygame.sprite.Sprite):
         self.target     = target.copy()
         self.rect.top   = source.top
         self.rect.left  = source.left
-        self.a_y = (self.rect.top - self.target.top ) / 20
-        self.a_x = (self.rect.left - self.target.left ) / 20
+        self.a_y = (self.rect.top - self.target.top ) / 40
+        self.a_x = (self.rect.left - self.target.left ) / 40
         if self.a_y == 0:
             angle = 0
         else:

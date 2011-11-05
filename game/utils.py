@@ -18,6 +18,14 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
 
+def save_image(name, surface):
+    fullname = os.path.join(data_directory, name)
+    print fullname
+    try:
+        pygame.image.save(surface, fullname)
+    except pygame.error, message:
+        print 'cannot save image: ',pygame.error, message
+
 #loads a part of an image and returns it with the Rect
 def load_image_sprite(name, colorkey=None, rect=pygame.Rect(0,0,10,10)):
     fullname = os.path.join(data_directory, name)

@@ -79,7 +79,7 @@ class Miniboss(pygame.sprite.Sprite):
         self.value      = 1
         self.status     = 0 #0:alive, 1:dying, 2:dead
         self.dead_time  = 0 #the age when the object died, to create certain explosions
-        self.explosions = 30 
+        self.explosions = 60
         self.target = None
         #0:no laser, 1: top, 2: bottom
         self.shooting_sequence = [\
@@ -117,7 +117,8 @@ class Miniboss(pygame.sprite.Sprite):
         self.age += 1
         #If the sprite is dying, create one explosion per frame
         if self.status == 1:
-            self.image = pygame.transform.rotozoom(self.image,5,1)
+            if self.rect.left< 640:
+                self.image = pygame.transform.rotate(self.image,1)
             self.add_explosion()
             #The first update when dead, store the age when dead, to create a limited number of explosions
             if self.dead_time == 0:
