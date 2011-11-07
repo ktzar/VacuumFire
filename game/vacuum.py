@@ -231,7 +231,7 @@ class Vacuum():
                     miniboss.set_target(self.ship)
                     self.minibosses.add(miniboss)
 
-            except:
+            except ValueError:
                 self.level_finished = True
 
             #aliens damaging the player, remove them
