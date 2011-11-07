@@ -16,123 +16,156 @@ class Stage(pygame.Surface):
         self.set_colorkey((0,0,0))
         self.limits = []
 
-        self.overimage, self.overrect = utils.load_image('lava.png')
+        cached_image = False
+        #Using the previously generated image for the stage
+        #TODO, create hash of the source image for the level, to detect changes in it
+        try:
+            cached_image, temp_rect = utils.load_image('level_1_processed.png')
+            #To calculate averages
+            accum = 0
+            height = self.get_height()
+            self.blit(cached_image, (0,0))
+            print "height ",height
+            for x in range(self.get_width()):
+                if x % self.ratio == 0:
+                    #find min and max limits every self.ratio pixels
+                    limit_top = 0
+                    limit_bottom = height
+                    for y in range(height):
+                        if y > 0 and self.get_at((x,y)) == (0,0,0) and self.get_at((x,y-1)) != (0,0,0):
+                            limit_top = y
+                        if y < height and self.get_at((x,y)) == (0,0,0) and self.get_at((x,y+1)) != (0,0,0):
+                            limit_bottom = y
+                    self.limits.append([limit_top,limit_bottom])
+            print self.limits
 
 
-        self.image_grass_bl, self.rect_grass = utils.load_image('stage_grass_bl.png')
-        self.image_grass_br, self.rect_grass = utils.load_image('stage_grass_br.png')
-        self.image_grass_tl, self.rect_grass = utils.load_image('stage_grass_tl.png')
-        self.image_grass_tr, self.rect_grass = utils.load_image('stage_grass_tr.png')
-        self.image_grass_t, self.rect_grass = utils.load_image('stage_grass_t.png')
+                
+        except pygame.error, message:
+            print message
+        except IndexError, message:
+            print "{0},{1}".format(x,y)
+            print message
+        except :
+            print 'No cached image, generating it'
+
+        if cached_image == False:
+            self.overimage, self.overrect = utils.load_image('lava.png')
+
+            self.image_grass_bl, self.rect_grass = utils.load_image('stage_grass_bl.png')
+            self.image_grass_br, self.rect_grass = utils.load_image('stage_grass_br.png')
+            self.image_grass_tl, self.rect_grass = utils.load_image('stage_grass_tl.png')
+            self.image_grass_tr, self.rect_grass = utils.load_image('stage_grass_tr.png')
+            self.image_grass_t, self.rect_grass = utils.load_image('stage_grass_t.png')
 
 
-        self.colors = { \
-            "grass":(0,0,0,255), \
-            "enemies":(255,0,0,255), \
-            "miniboss":(0,0,255,255), \
-            "boss":(0,255,0,255), \
-            'bg':(229,229,229,255) \
-        }
+            self.colors = { \
+                "grass":(0,0,0,255), \
+                "enemies":(255,0,0,255), \
+                "miniboss":(0,0,255,255), \
+                "boss":(0,255,0,255), \
+                'bg':(229,229,229,255) \
+            }
 
-        self.rect = self.rect.move((1,0))
-            
-        for x in range(0, self.rect.width-1):
-            #will store top and bottom limits and append it to self.limits
-            #to control the ship not getting over this
-            x_limits = [0,0]
-            for y in range(self.rect.height-1):
-                #Calculate top and bottom limits
-                if y>0 and self.level_data.get_at((x,y)) == self.colors["grass"] and \
-                self.level_data.get_at((x,y+1)) == self.colors["bg"]:
-                    x_limits[0] = y+1
+            self.rect = self.rect.move((1,0))
+                
+            for x in range(0, self.rect.width-1):
+                #will store top and bottom limits and append it to self.limits
+                #to control the ship not getting over this
+                x_limits = [0,0]
+                for y in range(self.rect.height-1):
+                    #Calculate top and bottom limits
+                    if y>0 and self.level_data.get_at((x,y)) == self.colors["grass"] and \
+                    self.level_data.get_at((x,y+1)) == self.colors["bg"]:
+                        x_limits[0] = y+1
 
-                if y<self.rect.height and self.level_data.get_at((x,y)) == self.colors["bg"] and \
-                self.level_data.get_at((x,y+1)) == self.colors["grass"]:
-                    x_limits[1] = y-1
+                    if y<self.rect.height and self.level_data.get_at((x,y)) == self.colors["bg"] and \
+                    self.level_data.get_at((x,y+1)) == self.colors["grass"]:
+                        x_limits[1] = y-1
 
-                if self.level_data.get_at((x,y)) == self.colors["grass"]:
-                    try:
-                        sprite_chosen = "center"
-                        if y == 0 or x == 0:
+                    if self.level_data.get_at((x,y)) == self.colors["grass"]:
+                        try:
                             sprite_chosen = "center"
-                        #Grass surrounded by grass
-                        elif self.level_data.get_at((x-1, y)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y)) == self.colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) == self.colors["grass"]:
-                            sprite_chosen = "center"
+                            if y == 0 or x == 0:
+                                sprite_chosen = "center"
+                            #Grass surrounded by grass
+                            elif self.level_data.get_at((x-1, y)) == self.colors["grass"] and \
+                            self.level_data.get_at((x+1, y)) == self.colors["grass"] and \
+                            self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x, y+1)) == self.colors["grass"]:
+                                sprite_chosen = "center"
 
-                        #Corner
-                        elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
-                        self.level_data.get_at((x-1, y-1)) != self.colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) != self.colors["grass"]:
-                            sprite_chosen = self.image_grass_tl
+                            #Corner
+                            elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
+                            self.level_data.get_at((x-1, y-1)) != self.colors["grass"] and \
+                            self.level_data.get_at((x, y-1)) != self.colors["grass"]:
+                                sprite_chosen = self.image_grass_tl
 
-                        #Corner
-                        elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
-                        self.level_data.get_at((x+1, y-1)) != self.colors["grass"] and \
-                        self.level_data.get_at((x, y-1)) != self.colors["grass"]:
-                            sprite_chosen = self.image_grass_tr
+                            #Corner
+                            elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
+                            self.level_data.get_at((x+1, y-1)) != self.colors["grass"] and \
+                            self.level_data.get_at((x, y-1)) != self.colors["grass"]:
+                                sprite_chosen = self.image_grass_tr
 
-                        #Corner
-                        elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
-                        self.level_data.get_at((x-1, y+1)) != self.colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) != self.colors["grass"]:
-                            sprite_chosen = self.image_grass_bl
+                            #Corner
+                            elif self.level_data.get_at((x-1, y)) != self.colors["grass"] and\
+                            self.level_data.get_at((x-1, y+1)) != self.colors["grass"] and \
+                            self.level_data.get_at((x, y+1)) != self.colors["grass"]:
+                                sprite_chosen = self.image_grass_bl
 
-                        #Corner
-                        elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
-                        self.level_data.get_at((x+1, y+1)) != self.colors["grass"] and \
-                        self.level_data.get_at((x, y+1)) != self.colors["grass"]:
-                            sprite_chosen = self.image_grass_br
+                            #Corner
+                            elif self.level_data.get_at((x+1, y)) != self.colors["grass"] and\
+                            self.level_data.get_at((x+1, y+1)) != self.colors["grass"] and \
+                            self.level_data.get_at((x, y+1)) != self.colors["grass"]:
+                                sprite_chosen = self.image_grass_br
 
-                        #Side
-                        elif self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y)) == self.colors["bg"] and \
-                        self.level_data.get_at((x+1, y)) == self.colors["grass"]:
-                            sprite_chosen = self.get_grass_l()
+                            #Side
+                            elif self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x-1, y)) == self.colors["bg"] and \
+                            self.level_data.get_at((x+1, y)) == self.colors["grass"]:
+                                sprite_chosen = self.get_grass_l()
 
-                        #Side
-                        elif self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y)) == self.colors["bg"] and \
-                        self.level_data.get_at((x-1, y)) == self.colors["grass"]:
-                            sprite_chosen = self.get_grass_r()
+                            #Side
+                            elif self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x-1, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x+1, y)) == self.colors["bg"] and \
+                            self.level_data.get_at((x-1, y)) == self.colors["grass"]:
+                                sprite_chosen = self.get_grass_r()
 
-                        #Side
-                        elif self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y-1)) == self.colors["grass"]:
-                            sprite_chosen = self.get_grass_b()
+                            #Side
+                            elif self.level_data.get_at((x, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x+1, y-1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x-1, y-1)) == self.colors["grass"]:
+                                sprite_chosen = self.get_grass_b()
 
-                        #Side
-                        elif self.level_data.get_at((x, y+1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x+1, y+1)) == self.colors["grass"] and \
-                        self.level_data.get_at((x-1, y+1)) == self.colors["grass"]:
-                            sprite_chosen = self.image_grass_t
+                            #Side
+                            elif self.level_data.get_at((x, y+1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x+1, y+1)) == self.colors["grass"] and \
+                            self.level_data.get_at((x-1, y+1)) == self.colors["grass"]:
+                                sprite_chosen = self.image_grass_t
 
 
-                    except:
-                        print "Out of range in {0},{1}".format(x,y)
+                        except:
+                            print "Out of range in {0},{1}".format(x,y)
 
-                    if sprite_chosen == "center":
-                        #Choose one random grass sprite
-                        grass_choice = (x + y + random.randint(0,50)  ) % 4
-                        sprite_chosen = self.get_grass_center()
-                    self.blit(sprite_chosen, (x*self.ratio, y*self.ratio))
+                        if sprite_chosen == "center":
+                            #Choose one random grass sprite
+                            grass_choice = (x + y + random.randint(0,50)  ) % 4
+                            sprite_chosen = self.get_grass_center()
+                        self.blit(sprite_chosen, (x*self.ratio, y*self.ratio))
 
-            self.limits.append(x_limits)
-        for x in range(self.get_width()):
-            for y in range(self.get_height()):
-                if self.get_at((x,y)) != (0,0,0,255):
-                    new_colour = self.get_at((x,y))
-                    new_over = self.overimage.get_at((x%self.overrect.width,y%self.overrect.height))
-                    new_colour.r = min(new_colour.r + new_over.r,200)
-                    new_colour.g = min(new_colour.g + new_over.g,200)
-                    new_colour.b = min(new_colour.b + new_over.b,200)
-                    self.set_at((x,y), new_colour)
-        utils.save_image('level_1_processed.png', self)
+                self.limits.append(x_limits)
+            for x in range(self.get_width()):
+                for y in range(self.get_height()):
+                    if self.get_at((x,y)) != (0,0,0,255):
+                        new_colour = self.get_at((x,y))
+                        new_over = self.overimage.get_at((x%self.overrect.width,y%self.overrect.height))
+                        new_colour.r = min(new_colour.r + new_over.r,200)
+                        new_colour.g = min(new_colour.g + new_over.g,200)
+                        new_colour.b = min(new_colour.b + new_over.b,200)
+                        self.set_at((x,y), new_colour)
+            utils.save_image('level_1_processed.png', self)
 
     def update(self):
         self.scroll(-1,0)
