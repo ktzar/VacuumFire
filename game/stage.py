@@ -9,6 +9,7 @@ class Stage(pygame.Surface):
     def __init__(self, stage_file='level_1'):
         self.level_data, self.rect = utils.load_image('{0}.gif'.format(stage_file))
         self.ratio = 16 #ratio of pixel in stage file / pixel in game
+        self.limits_ratio = 8 #ratio of pixel in limits caculation
         pygame.Surface.__init__(self, (self.rect.width*self.ratio, self.rect.height*self.ratio))
         self.counter = 0
         self.scrolled = 0
@@ -32,7 +33,7 @@ class Stage(pygame.Surface):
             accum = 0
             height = self.get_height()
             self.blit(cached_image, (0,0))
-            for x in range(0,self.get_width(), self.ratio):
+            for x in range(0,self.get_width(), self.limits_ratio):
                 #find min and max limits every self.ratio pixels
                 limit_top = False
                 limit_bottom = False
@@ -179,9 +180,9 @@ class Stage(pygame.Surface):
     #returns 0 if no colission, 1 if colission on bottom, -1 if colission on top
     def checkcollide(self, rect):
         if rect.width > self.ratio:
-            the_limits = self.limits[1+int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+            the_limits = self.limits[1+int(self.scrolled/self.limits_ratio) + int(rect.left/self.limits_ratio)]
         else:
-            the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+            the_limits = self.limits[int(self.scrolled/self.limits_ratio) + int(rect.left/self.limits_ratio)]
 
         if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
             return -1

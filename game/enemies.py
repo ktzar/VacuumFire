@@ -125,7 +125,8 @@ class Miniboss(pygame.sprite.Sprite):
                 self.dead_time = self.age
             if self.age - self.dead_time > self.explosions:
                 self.status = 2
-            self.image.set_alpha(max(0,255-(self.age - self.dead_time)*10))
+            new_opacity = max(0,255-(self.age - self.dead_time)*10)
+            self.image.set_alpha(new_opacity)
             #don't shoot
             return
 
@@ -148,7 +149,7 @@ class Miniboss(pygame.sprite.Sprite):
             if current_sequence == 2:
                 laser_pos.left += laser_pos.width/2
                 laser_pos.top += laser_pos.height
-            laser = EnemyLaser(laser_pos, self.stage.ship.rect)
+            laser = EnemyLaser(laser_pos, self.stage.ship.rect.copy())
             self.stage.add_enemylaser(laser)
 
 

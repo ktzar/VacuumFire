@@ -48,6 +48,7 @@ class EnemyLaser(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.image, self.rect = utils.load_image('laserbeam.png')
         self.target     = target.copy()
+        source = source.copy()
         self.rect.top   = source.top
         self.rect.left  = source.left
         #30 and 40 are the min/max boundaries for the random speed 
