@@ -30,7 +30,7 @@ class Stage(pygame.Surface):
         self.rect = self.rect.move((1,0))
         try:
             #Load the cached image
-            cached_image, temp_rect = utils.load_image('level_1_processed.png')
+            cached_image, temp_rect = utils.load_image('{0}_processed.png'.format(stage_file))
             self.blit(cached_image, (0,0))
             #Detect limits
             self.calculate_limits()
@@ -44,6 +44,14 @@ class Stage(pygame.Surface):
         except BaseException, message:
             print message
             print 'No cached image, generating it'
+
+        level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
+        print "MD5 of level ",level_md5
+        level_old_md5 = utils.get_option('{0}_hash'.format(stage_file))
+        print "Old MD5 of level ",level_old_md5
+        if level_md5 != level_old_md5:
+            print "Level has changed, process it again"
+            cached_image = False 
 
         if cached_image == False:
             self.overimage_lava, self.overrect_lava = utils.load_image('lava.png')
@@ -146,7 +154,10 @@ class Stage(pygame.Surface):
                         new_colour.g = max(1,min(new_colour.g - over_lava.r - over_rock.r/2,250))
                         new_colour.b = max(1,min(new_colour.b - over_lava.r - over_rock.r/2,250))
                         self.set_at((x,y), new_colour)
-            utils.save_image('level_1_processed.png', self)
+            utils.save_image('{0}_processed.png'.format(stage_file), self)
+            level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
+            print "MD5 of stage: {0}".format(level_md5)
+            utils.set_option('{0}_hash'.format(stage_file), level_md5)
 
     def calculate_limits(self):
         #TODO: cache limits, it takes a while to process them
@@ -178,7 +189,7 @@ class Stage(pygame.Surface):
         if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
             return -1
 
-        if the_limits[1] != 0 and the_limits[1]*self.ratio < rect.top:
+        if the_limits[1] != 31 and the_limits[1]*self.ratio < rect.top:
             return 1
 
         return 0
@@ -212,12 +223,16 @@ class Stage(pygame.Surface):
             for y in range(self.rect.height-1):
                 x = int(self.scrolled/self.ratio)+screen_width
                 if self.level_data.get_at((x, y)) == self.colors["enemies"]:
+                    #So we don't load it again
+                    self.level_data.set_at((x, y), self.colors["bg"])
                     enemies.append(y*self.ratio)
                 if self.level_data.get_at((x, y)) == self.colors["miniboss"]:
                     #So we don't load it again (when there's a miniboss present the stage doesn't scroll
                     self.level_data.set_at((x, y), self.colors["bg"])
                     minibosses.append(y*self.ratio)
                 if self.level_data.get_at((x, y)) == self.colors["boss"]:
+                    #So we don't load it again (when there's a miniboss present the stage doesn't scroll
+                    self.level_data.set_at((x, y), self.colors["bg"])
                     bosses.append(y*self.ratio)
         return (enemies,minibosses, bosses)
         

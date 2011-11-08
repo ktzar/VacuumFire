@@ -26,7 +26,7 @@ class Main():
         pygame.display.set_icon(icon)
 
         intro = Intro(self.screen)
-        vacuum = Vacuum(self.screen)
+        vacuum = False
         self.clock = pygame.time.Clock()
 
         #Load musics
@@ -39,7 +39,7 @@ class Main():
 
         #Loop intro or game depending on intro's state
         while 1:
-            self.clock.tick(50)
+            self.clock.tick(40)
             if intro.menu_finished == False:
                 intro.loop()
             else:
@@ -47,6 +47,8 @@ class Main():
                 if self.music_game_playing == False:
                     self.music['game'].play()
                     self.music_game_playing = True
+                if vacuum == False:
+                    vacuum = Vacuum(self.screen)
                 vacuum.loop()
             pygame.display.flip()
 

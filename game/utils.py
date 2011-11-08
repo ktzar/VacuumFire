@@ -1,7 +1,39 @@
-import os, pygame
+import os, pygame, hashlib, pickle
 from pygame.locals import *
 
+def file_md5(filename):
+    md5 = hashlib.md5()
+    with open(os.path.join(data_directory,filename),'rb') as f: 
+        for chunk in iter(lambda: f.read(8192), ''): 
+             md5.update(chunk)
+    s = md5.digest()
+    return ("%02x"*len(s)) % tuple(map(ord, s))
+
 data_directory = 'data'
+
+
+def get_option(key):
+    try:
+        options = pickle.load( open( os.path.join(data_directory,"options.p"), "rb" ) )
+    except IOError:
+        options = {}
+        pickle.dump( options, open( os.path.join(data_directory,"options.p"), "wb" ) )
+        
+    if options.has_key(key):
+        return options[key]
+    else:
+        return False
+
+def set_option(key, value):
+    try:
+        options = pickle.load( open( os.path.join(data_directory,"options.p"), "rb" ) )
+    except IOError:
+        options = {}
+        pickle.dump( options, open( os.path.join(data_directory,"options.p"), "wb" ) )
+    options[key] = value
+    pickle.dump( options, open( os.path.join(data_directory,"options.p"), "wb" ) )
+
+
 
 #loads an image and returns it with the Rect
 def load_image(name, colorkey=None):

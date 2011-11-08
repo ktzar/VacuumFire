@@ -1,3 +1,5 @@
+TODO: Use  pygame.surfarray for surface manipulation
+
 V0.4    October 31st 2011
 ========================
 Added minibosses and bosses (still not implemented fully)

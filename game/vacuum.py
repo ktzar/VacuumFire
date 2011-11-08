@@ -30,7 +30,13 @@ class Vacuum():
         self.score = Score_Meter((10,10))
         #Display The Background
         self.screen.blit(self.background, (0, 0))
+
+        font = utils.load_font('4114blasterc.ttf', 36)
+        text_color = (255,255,255)
+        text = font.render("Initialising", 1, text_color)
+        self.screen.blit(text, (200, 300))
         pygame.display.flip()
+
 
 
         #The player's ship
@@ -119,24 +125,24 @@ class Vacuum():
             #TODO powerup should be processed in ship
             if powerup_obtained.type == 0:
                 self.ship.life_up()
-                self.hud.add(Flying_Label( self.ship.rect, 'Energy!'))
+                self.hud.add(Flying_Label( self.ship.rect, 'Energy'))
                 self.lifemeter.life = self.ship.life
 
             if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
                 self.powerup_speed.set_status(self.ship.powerup['speedup'])
-                self.hud.add(Flying_Label( self.ship.rect, 'Speed up!'))
+                self.hud.add(Flying_Label( self.ship.rect, 'Speed up'))
                 #print "Increase speed to {0}".format(self.ship.powerup['speedup'])
             elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
                 Laser.move += 2 
                 self.powerup_weapon.set_status(Laser.max_lasers)
                 print "Increase lasers to {0}".format(Laser.max_lasers)
-                self.hud.add(Flying_Label( self.ship.rect, 'More lasers!'))
+                self.hud.add(Flying_Label( self.ship.rect, 'Lasers'))
 
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
                 print "Activate penetration"
-                self.hud.add(Flying_Label( self.ship.rect, 'Penetration!'))
+                self.hud.add(Flying_Label( self.ship.rect, 'Penetration'))
                 self.ship.powerup['penetrate'] = True
             else:
                 print "No more powerups available"
@@ -199,89 +205,86 @@ class Vacuum():
     #Main Loop
     def loop(self):
         count = 0
-        while 1:
-            count = (count+1)%50
+        count = (count+1)%50
 
-            #handle input events
-            ok = self.handle_keys()
-            if ok == False:
-                return
+        #handle input events
+        ok = self.handle_keys()
+        if ok == False:
+            return
 
-            if self.game_started == False:
-                start_text = self.font.render('Press any key to start', 2, (0,0,0))
-                self.screen.blit(start_text, (150, 200))
-                pygame.display.flip()
-                continue
-
-            if self.game_paused == 1:
-                start_text = self.font.render('Game paused', 2, (255,255,255))
-                self.screen.blit(start_text, (150, 200))
-                pygame.display.flip()
-                continue
-
-            try:
-                (new_enemies, new_minibosses, new_bosses) = self.level.getenemies() 
-                for enemy_y in new_enemies:
-                    alien = Alien(enemy_y)
-                    alien.set_target(self.ship)
-                    self.enemies.add(alien)
-
-                for enemy_y in new_minibosses:
-                    miniboss = Miniboss(enemy_y, self)
-                    miniboss.set_target(self.ship)
-                    self.minibosses.add(miniboss)
-
-            except ValueError:
-                self.level_finished = True
-
-            #aliens damaging the player, remove them
-            damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
-            damage.extend(pygame.sprite.spritecollide(self.ship, self.enemylasers, True))
-            for miniboss in self.minibosses:
-                if pygame.sprite.collide_mask(self.ship, miniboss):
-                    damage.append(miniboss)
-            self.process_powerups()
-            collisions = self.process_stagecollisions()
-            for collision in collisions:
-                damage.append(1)
-            self.process_damage(damage)
-            self.process_killedaliens()
-
-            #draw the level
-            all_sprites = pygame.sprite.Group()
-            all_sprites.add(self.player.sprites())
-            all_sprites.add(self.enemies.sprites())
-            all_sprites.add(self.minibosses.sprites())
-            all_sprites.add(self.powerups.sprites())
-            all_sprites.add(self.fire.sprites())
-            all_sprites.add(self.enemylasers.sprites())
-            all_sprites.add(self.hud.sprites())
-            all_sprites.add(self.explosions.sprites())
-            all_sprites.update()
-            if len(self.minibosses.sprites()) == 0:
-                self.level.update()
-            self.background.update()
-
-            #Move and draw the background
-
-            self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.level, (0, 0))
-
-            if self.level_finished == True:
-                level_text = self.font.render("Level finished", 2, (255, 255, 255))
-                self.screen.blit(level_text, (280, 200))
-            elif self.game_finished == True:
-                gameover_text = self.font.render("Game Over", 2, (255, 255, 255))
-                self.screen.blit(gameover_text, (280, 200))
-                gameover_text = self.font.render("Press Esc", 2, (255, 255, 255))
-                self.screen.blit(gameover_text, (280, 230))
-            else:
-                all_sprites.draw(self.screen)
-                all_sprites.empty()
-
-            #draw all the groups of sprites
-
+        if self.game_started == False:
+            start_text = self.font.render('Press any key to start', 2, (0,0,0))
+            self.screen.blit(start_text, (150, 200))
             pygame.display.flip()
+            return
+
+        if self.game_paused == 1:
+            start_text = self.font.render('Game paused', 2, (255,255,255))
+            self.screen.blit(start_text, (150, 200))
+            pygame.display.flip()
+            return
+
+        try:
+            (new_enemies, new_minibosses, new_bosses) = self.level.getenemies() 
+            for enemy_y in new_enemies:
+                alien = Alien(enemy_y)
+                alien.set_target(self.ship)
+                self.enemies.add(alien)
+
+            for enemy_y in new_minibosses:
+                miniboss = Miniboss(enemy_y, self)
+                miniboss.set_target(self.ship)
+                self.minibosses.add(miniboss)
+
+        except ValueError:
+            self.level_finished = True
+
+        #aliens damaging the player, remove them
+        damage  = pygame.sprite.spritecollide(self.ship, self.enemies, True)
+        damage.extend(pygame.sprite.spritecollide(self.ship, self.enemylasers, True))
+        for miniboss in self.minibosses:
+            if pygame.sprite.collide_mask(self.ship, miniboss):
+                damage.append(miniboss)
+        self.process_powerups()
+        collisions = self.process_stagecollisions()
+        for collision in collisions:
+            damage.append(1)
+        self.process_damage(damage)
+        self.process_killedaliens()
+
+        #draw the level
+        all_sprites = pygame.sprite.Group()
+        all_sprites.add(self.player.sprites())
+        all_sprites.add(self.enemies.sprites())
+        all_sprites.add(self.minibosses.sprites())
+        all_sprites.add(self.powerups.sprites())
+        all_sprites.add(self.fire.sprites())
+        all_sprites.add(self.enemylasers.sprites())
+        all_sprites.add(self.hud.sprites())
+        all_sprites.add(self.explosions.sprites())
+        all_sprites.update()
+        if len(self.minibosses.sprites()) == 0:
+            self.level.update()
+        self.background.update()
+
+        #Move and draw the background
+
+        self.screen.blit(self.background, (0, 0))
+        self.screen.blit(self.level, (-self.level.scrolled, 0))
+
+        if self.level_finished == True:
+            level_text = self.font.render("Level finished", 2, (255, 255, 255))
+            self.screen.blit(level_text, (280, 200))
+        elif self.game_finished == True:
+            gameover_text = self.font.render("Game Over", 2, (255, 255, 255))
+            self.screen.blit(gameover_text, (280, 200))
+            gameover_text = self.font.render("Press Esc", 2, (255, 255, 255))
+            self.screen.blit(gameover_text, (280, 230))
+        else:
+            all_sprites.draw(self.screen)
+            all_sprites.empty()
+
+        #draw all the groups of sprites
 
     #Game Over
 
