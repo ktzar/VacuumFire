@@ -17,7 +17,7 @@ class Main():
         #Initialize Everything
         pygame.init()
         #self.screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN | pygame.DOUBLEBUF)
-        self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE | pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE)
         pygame.display.set_caption('VacuumFire')
         #pygame.display.toggle_fullscreen()
         pygame.mouse.set_visible(0)

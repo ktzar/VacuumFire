@@ -46,7 +46,8 @@ class Stage(pygame.Surface):
             print 'No cached image, generating it'
 
         if cached_image == False:
-            self.overimage, self.overrect = utils.load_image('lava.png')
+            self.overimage_lava, self.overrect_lava = utils.load_image('lava.png')
+            self.overimage_rocks, self.overrect_rocks = utils.load_image('rocks.png')
 
             self.image_grass_bl, self.rect_grass = utils.load_image('stage_grass_bl.png')
             self.image_grass_br, self.rect_grass = utils.load_image('stage_grass_br.png')
@@ -138,10 +139,12 @@ class Stage(pygame.Surface):
                 for y in range(self.get_height()):
                     if self.get_at((x,y)) != (0,0,0,255):
                         new_colour = self.get_at((x,y))
-                        new_over = self.overimage.get_at((x%self.overrect.width,y%self.overrect.height))
-                        new_colour.r = min(new_colour.r + new_over.r,200)
-                        new_colour.g = min(new_colour.g + new_over.g,200)
-                        new_colour.b = min(new_colour.b + new_over.b,200)
+                        over_lava = self.overimage_lava.get_at((x%self.overrect_lava.width,y%self.overrect_lava.height))
+                        over_rock = self.overimage_rocks.get_at((x%self.overrect_rocks.width,y%self.overrect_rocks.height))
+                        #Processed colours should be between 1 and 250 (if it's 0,0,0 it'll be keyed)
+                        new_colour.r = max(1,min(new_colour.r + over_lava.r*2 - over_rock.r/2,250))
+                        new_colour.g = max(1,min(new_colour.g - over_lava.r - over_rock.r/2,250))
+                        new_colour.b = max(1,min(new_colour.b - over_lava.r - over_rock.r/2,250))
                         self.set_at((x,y), new_colour)
             utils.save_image('level_1_processed.png', self)
 
