@@ -12,7 +12,7 @@ class Powerup(pygame.sprite.Sprite):
         self.age = 0
         self.status = 0
         self.max_status = 3
-        self.type = value % 3
+        self.type = value % 4
         self.value = 1000 #score it gives to the player
 
     def update(self):

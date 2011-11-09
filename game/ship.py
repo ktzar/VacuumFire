@@ -1,6 +1,5 @@
 import pygame
 import utils
-from math import *
 
 """This class represents the ship that the player controls"""
 class Ship(pygame.sprite.Sprite):
@@ -26,6 +25,7 @@ class Ship(pygame.sprite.Sprite):
     #Initial life counter
     life = 10
     max_life = 10
+    buddies = 0
     #'up' or 'down' (for the animation)
     status = ''
     #Ship.LEFT or Ship.RIGHT (for the animation)
@@ -35,12 +35,14 @@ class Ship(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.image, self.rect = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
         screen = pygame.display.get_surface()
+        self.age = 0
         self.area = screen.get_rect()
         self.rect.top = self.area.height / 2 - self.rect.height / 2
         #Initial position
         self.powerup = { 'penetrate' : False, 'speedup' : 0 }
 
     def update(self):
+        self.age += 0.6
         if self.x_status==Ship.LEFT and self.x_momentum < self.max_x_momentum:
             self.x_momentum-=self.momentum_delta
         if self.x_status==Ship.RIGHT and self.x_momentum > -self.max_x_momentum:
@@ -68,6 +70,7 @@ class Ship(pygame.sprite.Sprite):
             self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,43,54,43))
         else:
             self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
+
 
     def damage(self):
         self.life-=1

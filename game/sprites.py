@@ -1,6 +1,5 @@
 import pygame
-import utils, random
-from math import *
+import utils, random, math
 
 
 class Flying_Label(pygame.sprite.Sprite):
@@ -53,3 +52,13 @@ class Score_Meter(pygame.sprite.Sprite):
                 self.score = self.target_score
             self.reload_image()
 
+class Buddy(pygame.sprite.Sprite):
+    def __init__(self, reference):
+        pygame.sprite.Sprite.__init__(self)
+        self.reference = reference
+        self.image, self.rect = utils.load_image_sprite('buddy.png', rect=pygame.Rect(0,0,14,14))
+        self.image.set_colorkey((0,0,0))
+
+    def update(self):
+        self.rect.top = self.reference.rect.top + self.reference.rect.height /2 + 2*(self.rect.height) * math.sin(self.reference.age)
+        self.rect.left = self.reference.rect.left + self.reference.rect.width /2 + 2*(self.rect.width) * math.cos(self.reference.age)

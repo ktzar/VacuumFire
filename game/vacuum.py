@@ -48,6 +48,8 @@ class Vacuum():
         self.powerup_buddy  = BuddyMeter(pygame.Rect(580,400,0,0))
 
         self.player    = pygame.sprite.RenderPlain((self.ship))
+        self.buddies   = pygame.sprite.Group()
+        self.buddies.add(Buddy(self.ship))
         #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
         self.minibosses = pygame.sprite.Group()
@@ -144,6 +146,11 @@ class Vacuum():
                 print "Activate penetration"
                 self.hud.add(Flying_Label( self.ship.rect, 'Penetration'))
                 self.ship.powerup['penetrate'] = True
+            elif powerup_obtained.type == 4:
+                print "Activate buddy"
+                self.buddies.add(Buddy(self.ship))
+                self.ship.buddies += 1
+                self.powerup_buddy.set_status(self.ship.buddies)
             else:
                 print "No more powerups available"
 
@@ -258,6 +265,7 @@ class Vacuum():
         all_sprites.add(self.enemies.sprites())
         all_sprites.add(self.minibosses.sprites())
         all_sprites.add(self.powerups.sprites())
+        all_sprites.add(self.buddies.sprites())
         all_sprites.add(self.fire.sprites())
         all_sprites.add(self.enemylasers.sprites())
         all_sprites.add(self.hud.sprites())
