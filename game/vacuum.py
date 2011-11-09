@@ -37,11 +37,8 @@ class Vacuum():
         self.screen.blit(text, (200, 300))
         pygame.display.flip()
 
-
-        self.dummy = Dummy()
-        self.dummy2 = Dummy()
-
-
+        #self.dummy = Dummy()
+        #self.dummy2 = Dummy()
 
         #The player's ship
         self.ship = Ship()
@@ -68,13 +65,11 @@ class Vacuum():
         self.hud.add(self.lifemeter)
         self.hud.add(self.score)
         self.hud.add((self.powerup_speed, self.powerup_weapon, self.powerup_buddy))
-        self.hud.add(self.dummy)
-        self.hud.add(self.dummy2)
+        #self.hud.add(self.dummy)
+        #self.hud.add(self.dummy2)
         #The level
         self.level = Stage('level_1')
         self.font = utils.load_font('4114blasterc.ttf', 36)
-
-
 
         self.game_started = True
         self.game_finished = False
@@ -266,12 +261,15 @@ class Vacuum():
         self.process_killedaliens()
 
         the_limits = self.level.the_limits(self.ship.rect)
+        """
+        Dummy lines to show the ship's current limits
         self.dummy.rect.top = the_limits[0]*self.level.ratio
         self.dummy2.rect.top = the_limits[1]*self.level.ratio
         self.dummy.rect.height = 2
         self.dummy2.rect.height = 2
         self.dummy.rect.left = self.ship.rect.left
         self.dummy2.rect.left = self.ship.rect.left
+        """
 
         #draw the level
         all_sprites = pygame.sprite.Group()

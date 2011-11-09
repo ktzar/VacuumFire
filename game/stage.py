@@ -191,20 +191,20 @@ class Stage(pygame.Surface):
         self.scroll(-1,0)
         self.scrolled+=1
 
-    #returns 0 if no colission, 1 if colission on bottom, -1 if colission on top
-
     def the_limits(self, rect):
         the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         return the_limits
 
+    #returns 0 if no colission, 1 if colission on bottom, -1 if colission on top
     def checkcollide(self, rect):
         the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
-            return -1
-        if the_limits[1] != 31 and the_limits[1]*self.ratio < rect.top:
-            return 1
-
-        return 0
+            collision_type = -1
+        elif the_limits[1] != 31 and the_limits[1]*self.ratio < rect.top + rect.height:
+            collision_type = 1
+        else:
+            collision_type = 0
+        return collision_type
 
     def get_grass_center(self):
         image_grass, rect_grass = utils.load_image('stage_grass_{0}.png'.format(random.randint(1,4)))
