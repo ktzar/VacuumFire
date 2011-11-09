@@ -43,6 +43,8 @@ class Stage(pygame.Surface):
         except Exception, message:
             print message
             print 'No cached image, generating it'
+        except:
+            print 'No cached image, generating it'
 
         level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
         print "MD5 of level ",level_md5
@@ -152,8 +154,11 @@ class Stage(pygame.Surface):
                         new_colour.r = max(1,min(new_colour.r + over_lava.r*2 - over_rock.r/2,250))
                         new_colour.g = max(1,min(new_colour.g - over_lava.r - over_rock.r/2,250))
                         new_colour.b = max(1,min(new_colour.b - over_lava.r - over_rock.r/2,250))
+                        """
+                        this draws a ratio*ratio grid in the level, useful for some debugging
                         if x % self.ratio == 0 or y % self.ratio == 0:
-                            new_colour = (0,255,0)
+                            new_colour = (0,0,255)
+                            """
                         self.set_at((x,y), new_colour)
             utils.save_image('{0}_processed.png'.format(stage_file), self)
             level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
@@ -162,26 +167,25 @@ class Stage(pygame.Surface):
 
     def calculate_limits(self):
         #TODO: cache limits, it takes a while to process them
-        for x in range(0, self.rect.width-1):
+        for x in range(self.rect.width-1):
             #will store top and bottom limits and append it to self.limits
             #to control the ship not getting over this
             x_limits = [-1,-1]
-            for y in range(self.rect.height-1):
+            for y in range(self.rect.height):
                 #Calculate top and bottom limits
-                pixel = self.level_data.get_at((x,y))
-                if x_limits[0] == -1 and pixel == self.colors['bg']:
+                if x_limits[0] == -1 and self.level_data.get_at((x,y)) != self.colors["grass"]:
                     x_limits[0] = y
-                if x_limits[0] != -1:
-                    if y>x_limits[0] and pixel == self.colors['grass']:
-                        x_limits[1] = y
-                if x_limits[0] != -1 and x_limits[1] != -1:
-                    break
-
-            if x_limits[0] == -1:
-                x_limits[0] = 0
-            if x_limits[1] == -1:
-                x_limits[1] = self.rect.height
+                if x_limits[0] != -1 and x_limits[1] == -1 and self.level_data.get_at((x,y)) == self.colors["grass"]:
+                    x_limits[1] = y
+                """
+                if y>0 and self.level_data.get_at((x,y)) == self.colors["grass"] and \
+                self.level_data.get_at((x,y+1)) == self.colors["bg"]:
+                    x_limits[0] = y+1
+                if y<self.rect.height and self.level_data.get_at((x,y)) == self.colors["bg"] and \
+                self.level_data.get_at((x,y+1)) == self.colors["grass"]:
+                    x_limits[1] = y-1"""
             self.limits.append(x_limits)
+
 
     def update(self):
         self.scroll(-1,0)
@@ -190,20 +194,13 @@ class Stage(pygame.Surface):
     #returns 0 if no colission, 1 if colission on bottom, -1 if colission on top
 
     def the_limits(self, rect):
-        print int(self.scrolled/self.ratio) + int(rect.left/self.ratio)
-        the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+        the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         return the_limits
 
     def checkcollide(self, rect):
-        return 0
-        if rect.width > self.ratio:
-            the_limits = self.limits[1+int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
-        else:
-            the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
-
+        the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
             return -1
-
         if the_limits[1] != 31 and the_limits[1]*self.ratio < rect.top:
             return 1
 
@@ -228,7 +225,6 @@ class Stage(pygame.Surface):
 #return the enemies in the current scroll position (self.scrolled + self.ratio).
 #only return enemies if self.scrolled%self.ratio == 0 (each pixel in the stage is one enemy, not self.ratio
     def getenemies(self):
-        return ([],[],[])
         enemies     = []
         minibosses  = []
         bosses      = []
