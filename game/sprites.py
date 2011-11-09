@@ -1,6 +1,10 @@
 import pygame
 import utils, random, math
 
+class Dummy(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.image, self.rect = utils.load_image('dummy.png')
 
 class Flying_Label(pygame.sprite.Sprite):
 
@@ -22,6 +26,7 @@ class Flying_Label(pygame.sprite.Sprite):
         self.rect.top -= self.age/3 + random.randint(1,5)
         if self.age > 11:
             self.kill()
+
 
 class Score_Meter(pygame.sprite.Sprite):
 
