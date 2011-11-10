@@ -4,7 +4,7 @@ import random
 from pygame.locals import *
 import utils
 from ship       import Ship
-from laser      import Laser
+from laser      import *
 from powerup    import Powerup
 from enemies    import *
 from stage      import Stage
@@ -49,8 +49,9 @@ class Vacuum():
         self.powerup_buddy  = BuddyMeter(pygame.Rect(580,400,0,0))
 
         self.player    = pygame.sprite.RenderPlain((self.ship))
-        self.buddies   = pygame.sprite.Group()
-        self.buddies.add(Buddy(self.ship))
+        #self.buddies   = pygame.sprite.Group()
+        #self.buddies.add(Buddy(self.ship)) # add a testing buddy
+        self.ship.buddies += 1
         #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
         self.minibosses = pygame.sprite.Group()
@@ -93,8 +94,14 @@ class Vacuum():
                     #shoot a laser if the max number is not reached
                     if Laser.num < Laser.max_lasers:
                         #print "There's {0} lasers in the screen and the max is {1}".format(Laser.num, Laser.max_lasers)
-                        self.laser = Laser(self.ship)
-                        self.fire.add(self.laser)
+                        laser = Laser(self.ship)
+                        self.fire.add(laser)
+                        if self.ship.buddies > 0:
+                            self.fire.add(DiagonalLaser(self.ship, "up"))
+                        if self.ship.buddies > 1:
+                            self.fire.add(DiagonalLaser(self.ship, "down"))
+                        if self.ship.buddies > 2:
+                            self.fire.add(DiagonalLaser(self.ship, "back"))
                 elif event.key == K_LEFT:
                     self.ship.move_left()
                 elif event.key == K_RIGHT:
@@ -126,12 +133,12 @@ class Vacuum():
             self.sounds['powerup'].play()
             self.score.add_score(powerup_obtained.value)
             #TODO powerup should be processed in ship
+            print 'powerup:',powerup_obtained.type
             if powerup_obtained.type == 0:
                 self.ship.life_up()
                 self.hud.add(Flying_Label( self.ship.rect, 'Energy'))
                 self.lifemeter.life = self.ship.life
-
-            if powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
+            elif powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
                 self.powerup_speed.set_status(self.ship.powerup['speedup'])
                 self.hud.add(Flying_Label( self.ship.rect, 'Speed up'))
@@ -206,7 +213,7 @@ class Vacuum():
                 self.add_explosion(fireball.rect)
                 scored = (1+dead.value)*1000
                 self.score.add_score(scored)
-                self.hud.add(Flying_Label( dead.rect, scored))
+                self.hud.add(Flying_Label( fireball.rect, scored))
                 if penetration == False:
                     fireball.kill()
 

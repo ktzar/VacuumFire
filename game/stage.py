@@ -184,6 +184,10 @@ class Stage(pygame.Surface):
                 if y<self.rect.height and self.level_data.get_at((x,y)) == self.colors["bg"] and \
                 self.level_data.get_at((x,y+1)) == self.colors["grass"]:
                     x_limits[1] = y-1"""
+            if x_limits[0] == -1:
+                x_limits[0] = 0
+            if x_limits[1] == -1:
+                x_limits[1] = self.rect.height
             self.limits.append(x_limits)
 
 

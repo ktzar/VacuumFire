@@ -68,5 +68,36 @@ class EnemyLaser(pygame.sprite.Sprite):
         if self.rect.left < 0:
             self.kill()
         
+class DiagonalLaser(Laser):
+    def __init__(self, owner, direction):
+        pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+        self.owner = owner
+        #this makes the animation
+        self.images = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+        self.image_anim_counter = 0
+        self.image, self.rect = utils.load_image(self.images[0], -1)
+        self.rect = owner.rect.copy()
+        self.rect.top+= owner.rect.height/2-10
+        self.rect.left+= owner.rect.width*0.5
+        self.move = 15
+
+        if direction == "up":
+            self.xmove = self.move
+            self.ymove = -self.move
+        if direction == "down":
+            self.xmove = self.move
+            self.ymove = self.move
+        if direction == "back":
+            self.xmove = -self.move
+            self.ymove = 0
+
+    def update(self):
+        self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
+        self.image.set_colorkey((0,0,0))
+        self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
+        self.rect = self.rect.move((self.xmove, self.ymove))
+        if self.rect.left > 1000:
+            self.kill()
+
 
 

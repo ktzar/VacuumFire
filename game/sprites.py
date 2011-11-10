@@ -58,12 +58,13 @@ class Score_Meter(pygame.sprite.Sprite):
             self.reload_image()
 
 class Buddy(pygame.sprite.Sprite):
-    def __init__(self, reference):
+    def __init__(self, ship):
         pygame.sprite.Sprite.__init__(self)
-        self.reference = reference
+        self.ship = ship
         self.image, self.rect = utils.load_image_sprite('buddy.png', rect=pygame.Rect(0,0,14,14))
         self.image.set_colorkey((0,0,0))
+        self.phase = self.ship.buddies * 2.09 #(2/3)*pi
 
     def update(self):
-        self.rect.top = self.reference.rect.top + self.reference.rect.height /2 + 2*(self.rect.height) * math.sin(self.reference.age)
-        self.rect.left = self.reference.rect.left + self.reference.rect.width /2 + 2*(self.rect.width) * math.cos(self.reference.age)
+        self.rect.top = self.ship.rect.top + self.ship.rect.height /2 + 2*(self.rect.height) * math.sin(self.phase + self.ship.age)
+        self.rect.left = self.ship.rect.left + self.ship.rect.width /2 + 2*(self.rect.width) * math.cos(self.phase + self.ship.age)
