@@ -49,7 +49,7 @@ class Vacuum():
         self.powerup_buddy  = BuddyMeter(pygame.Rect(580,400,0,0))
 
         self.player    = pygame.sprite.RenderPlain((self.ship))
-        #self.buddies   = pygame.sprite.Group()
+        self.buddies   = pygame.sprite.Group()
         #self.buddies.add(Buddy(self.ship)) # add a testing buddy
         self.ship.buddies += 1
         #group that stores all enemies
