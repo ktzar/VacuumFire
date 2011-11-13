@@ -21,9 +21,14 @@ class Laser(pygame.sprite.Sprite):
         Laser.num+=1
         self.owner = owner
         #this makes the animation
-        self.images = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+        self.images_files = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+        self.images = []
+        for image_file in self.images_files:
+            temp_image, self.rect = utils.load_image(image_file)
+            temp_image.set_colorkey((0,0,0))
+            self.images.append(temp_image)
+        self.image = self.images[0]
         self.image_anim_counter = 0
-        self.image, self.rect = utils.load_image(self.images[0], -1)
         self.rect = owner.rect.copy()
         self.rect.top+= owner.rect.height/2-10
         self.rect.left+= owner.rect.width*0.5
@@ -35,8 +40,7 @@ class Laser(pygame.sprite.Sprite):
         pygame.sprite.Sprite.kill(self)
 
     def update(self):
-        self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
-        self.image.set_colorkey((0,0,0))
+        self.image = self.images[self.image_anim_counter]
         self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
         self.rect = self.rect.move((self.move, 0))
         if self.rect.left > 1000:
@@ -73,9 +77,14 @@ class DiagonalLaser(Laser):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.owner = owner
         #this makes the animation
-        self.images = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+        self.images_files = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+        self.images = []
+        for image_file in self.images_files:
+            temp_image, self.rect = utils.load_image(image_file)
+            temp_image.set_colorkey((0,0,0))
+            self.images.append(temp_image)
+        self.image = self.images[0]
         self.image_anim_counter = 0
-        self.image, self.rect = utils.load_image(self.images[0], -1)
         self.rect = owner.rect.copy()
         self.rect.top+= owner.rect.height/2-10
         self.rect.left+= owner.rect.width*0.5
@@ -92,8 +101,7 @@ class DiagonalLaser(Laser):
             self.ymove = 0
 
     def update(self):
-        self.image, dummy_rect = utils.load_image(self.images[self.image_anim_counter])
-        self.image.set_colorkey((0,0,0))
+        self.image = self.images[self.image_anim_counter]
         self.image_anim_counter = (self.image_anim_counter+1)%len(self.images)
         self.rect = self.rect.move((self.xmove, self.ymove))
         if self.rect.left > 1000:
