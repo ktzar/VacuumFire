@@ -14,6 +14,8 @@ from background import Background
 from meters     import *
 from sprites    import *
 
+show_dummies = False
+
 class Vacuum():
 
     def __init__(self, screen):
@@ -37,8 +39,9 @@ class Vacuum():
         self.screen.blit(text, (200, 300))
         pygame.display.flip()
 
-        #self.dummy = Dummy()
-        #self.dummy2 = Dummy()
+        if show_dummies:
+            self.dummy = Dummy()
+            self.dummy2 = Dummy()
 
         #The player's ship
         self.ship = Ship()
@@ -51,7 +54,7 @@ class Vacuum():
         self.player    = pygame.sprite.RenderPlain((self.ship))
         self.buddies   = pygame.sprite.Group()
         #self.buddies.add(Buddy(self.ship)) # add a testing buddy
-        self.ship.buddies += 1
+        #self.ship.buddies += 1
         #group that stores all enemies
         self.enemies    = pygame.sprite.Group()
         self.minibosses = pygame.sprite.Group()
@@ -66,8 +69,9 @@ class Vacuum():
         self.hud.add(self.lifemeter)
         self.hud.add(self.score)
         self.hud.add((self.powerup_speed, self.powerup_weapon, self.powerup_buddy))
-        #self.hud.add(self.dummy)
-        #self.hud.add(self.dummy2)
+        if show_dummies:
+            self.hud.add(self.dummy)
+            self.hud.add(self.dummy2)
         #The level
         self.level = Stage('level_1')
         self.font = utils.load_font('4114blasterc.ttf', 36)
@@ -240,7 +244,7 @@ class Vacuum():
             return
 
         try:
-            (new_enemies, new_minibosses, new_bosses) = self.level.getenemies() 
+            (new_enemies, new_minibosses, new_bosses, end) = self.level.getenemies() 
             for enemy_y in new_enemies:
                 alien = Alien(enemy_y)
                 alien.set_target(self.ship)
@@ -250,6 +254,8 @@ class Vacuum():
                 miniboss = Miniboss(enemy_y, self)
                 miniboss.set_target(self.ship)
                 self.minibosses.add(miniboss)
+            if end:
+                self.level_finished = True
 
         except ValueError:
             self.level_finished = True
@@ -267,16 +273,16 @@ class Vacuum():
         self.process_damage(damage)
         self.process_killedaliens()
 
-        the_limits = self.level.the_limits(self.ship.rect)
-        """
-        Dummy lines to show the ship's current limits
-        self.dummy.rect.top = the_limits[0]*self.level.ratio
-        self.dummy2.rect.top = the_limits[1]*self.level.ratio
-        self.dummy.rect.height = 2
-        self.dummy2.rect.height = 2
-        self.dummy.rect.left = self.ship.rect.left
-        self.dummy2.rect.left = self.ship.rect.left
-        """
+        
+        #Dummy lines to show the ship's current limits
+        if show_dummies:
+            the_limits = self.level.the_limits(self.ship.rect)
+            self.dummy.rect.top = the_limits[0]*self.level.ratio
+            self.dummy2.rect.top = the_limits[1]*self.level.ratio
+            self.dummy.rect.height = 2
+            self.dummy2.rect.height = 2
+            self.dummy.rect.left = self.ship.rect.left
+            self.dummy2.rect.left = self.ship.rect.left
 
         #draw the level
         all_sprites = pygame.sprite.Group()
