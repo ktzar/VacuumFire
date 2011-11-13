@@ -192,16 +192,15 @@ class Stage(pygame.Surface):
 
 
     def update(self):
-        self.scroll(-1,0)
         self.scrolled+=1
 
     def the_limits(self, rect):
-        the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+        the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         return the_limits
 
     #returns 0 if no colission, 1 if colission on bottom, -1 if colission on top
     def checkcollide(self, rect):
-        the_limits = self.limits[int(2*self.scrolled/self.ratio) + int(rect.left/self.ratio)]
+        the_limits = self.limits[int(self.scrolled/self.ratio) + int(rect.left/self.ratio)]
         if the_limits[0] != 0 and the_limits[0]*self.ratio > rect.top:
             collision_type = -1
         elif the_limits[1] != 31 and the_limits[1]*self.ratio < rect.top + rect.height:
@@ -232,9 +231,9 @@ class Stage(pygame.Surface):
         enemies     = []
         minibosses  = []
         bosses      = []
+        end         = self.scrolled > self.rect.width *self.ratio
         surf = pygame.display.get_surface()
         screen_width = int(surf.get_width() / self.ratio)
-
         if (self.scrolled%self.ratio == 0 ):
             for y in range(self.rect.height-1):
                 x = int(self.scrolled/self.ratio)+screen_width
@@ -250,7 +249,7 @@ class Stage(pygame.Surface):
                     #So we don't load it again (when there's a miniboss present the stage doesn't scroll
                     self.level_data.set_at((x, y), self.colors["bg"])
                     bosses.append(y*self.ratio)
-        return (enemies,minibosses, bosses)
+        return (enemies,minibosses, bosses,end)
         
 
 
