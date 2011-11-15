@@ -67,4 +67,4 @@ class Buddy(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.top = self.ship.rect.top + self.ship.rect.height /2 + 2*(self.rect.height) * math.sin(self.phase + self.ship.age)
-        self.rect.left = self.ship.rect.left + self.ship.rect.width /2 + 2*(self.rect.width) * math.cos(self.phase + self.ship.age)
+        self.rect.left = -20 + self.ship.rect.left + self.ship.rect.width /2 + 2*(self.rect.width) * math.cos(self.phase + self.ship.age)

@@ -1,4 +1,11 @@
 TODO: Use  pygame.surfarray for surface manipulation
+V0.5    November 2011
+========================
+Level stage redone and generated when the level info file changes. New explosions
+Minibosses fully implemented
+HUGE performance improvements
+TODO: Add options to the menu, final boss, more levels
+
 
 V0.4    October 31st 2011
 ========================
@@ -31,3 +38,8 @@ Add image for the background with walls
 Add levels read from gif files
 Add gameover
 
+
+Credits
+========================
+Explosions:
+http://gushh.net/blog/free-game-sprites-explosion-5/

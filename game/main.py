@@ -16,8 +16,8 @@ class Main():
            a loop until the function returns."""
         #Initialize Everything
         pygame.init()
-        #self.screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN | pygame.DOUBLEBUF)
-        self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE)
+        self.screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN | pygame.DOUBLEBUF)
+        #self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE)
         pygame.display.set_caption('VacuumFire')
         #pygame.display.toggle_fullscreen()
         pygame.mouse.set_visible(0)
@@ -39,7 +39,7 @@ class Main():
 
         #Loop intro or game depending on intro's state
         while 1:
-            self.clock.tick(40)
+            self.clock.tick(50)
             if intro.menu_finished == False:
                 intro.loop()
             else:

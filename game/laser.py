@@ -11,6 +11,7 @@ class Laser(pygame.sprite.Sprite):
     max_lasers = 1
     sound_laser = 0
     move = 15
+    images = False
 
     def __init__(self, owner):
         if Laser.sound_laser == 0:
@@ -21,12 +22,17 @@ class Laser(pygame.sprite.Sprite):
         Laser.num+=1
         self.owner = owner
         #this makes the animation
-        self.images_files = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
-        self.images = []
-        for image_file in self.images_files:
-            temp_image, self.rect = utils.load_image(image_file)
-            temp_image.set_colorkey((0,0,0))
-            self.images.append(temp_image)
+        #Cache in the class static
+        if Laser.images == False:
+            self.images_files = ('laser.gif', 'laser-2.gif', 'laser-3.gif', 'laser-4.gif', 'laser-3.gif', 'laser-2.gif')
+            self.images = []
+            for image_file in self.images_files:
+                temp_image, self.rect = utils.load_image(image_file)
+                temp_image.set_colorkey((0,0,0))
+                self.images.append(temp_image)
+            Laser.images = self.images
+        else:
+            self.images = Laser.images
         self.image = self.images[0]
         self.image_anim_counter = 0
         self.rect = owner.rect.copy()
@@ -56,8 +62,8 @@ class EnemyLaser(pygame.sprite.Sprite):
         self.rect.top   = source.top
         self.rect.left  = source.left
         #30 and 40 are the min/max boundaries for the random speed 
-        self.a_y = (self.rect.top - self.target.top ) / random.randint(30,40)
-        self.a_x = (self.rect.left - self.target.left ) / random.randint(30,40)
+        self.a_y = (self.rect.top - self.target.top ) / random.randint(20,30)
+        self.a_x = (self.rect.left - self.target.left ) / random.randint(20,30)
         if self.a_y == 0:
             angle = 0
         else:

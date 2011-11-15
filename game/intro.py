@@ -16,7 +16,7 @@ class Intro():
 
         self.background, self.background_rect    = utils.load_image('intro_bg_1.jpg')
         self.parallax, self.parallax_rect        = utils.load_image('intro_bg_2.png')
-        self.logo, foo          = utils.load_image('intro_logo.png')
+        self.logo, foo                           = utils.load_image('intro_logo.png')
 
         self.screen.blit(self.background, (0, 0))
         pygame.display.flip()

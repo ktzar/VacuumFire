@@ -8,32 +8,50 @@ class Alien(pygame.sprite.Sprite):
     #bomb sound
     sound_bomb = None
     ratio_powerup = 3 
+    images_files = ('alien1.gif', 'alien2.gif', 'alien3.gif', 'alien4.gif', 'alien5.gif')
+    images = False
 
     def __init__(self, top = -1):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         if Alien.sound_bomb == None:
             Alien.sound_bomb = utils.load_sound('bomb-02.wav')
-        self.images = ('alien1.gif', 'alien2.gif', 'alien3.gif', 'alien4.gif', 'alien5.gif')
         self.age = 0
         self.cycle = 0
         self.cycle_2 = 0
-        self.value = random.randint(0,len(self.images)-1)
-        if self.value == 3:
-            self.image, self.rect = utils.load_image_sprite("alien4.gif", rect=pygame.Rect(0,0,58,34))
+
+        #Cache in the class static
+        if Alien.images == False:
+            images = []
+            for image_file in Alien.images_files: 
+                image, rect = utils.load_image(image_file, -1)
+                images.append((image,rect))
+            Alien.images = images
         else:
-            self.image, self.rect = utils.load_image(self.images[self.value], -1)
+            images = Alien.images
+
+        self.value = random.randint(0,len(self.images)-1)
+        self.image, self.rect = images[self.value]
         self.contains_powerup = (random.randint(1,Alien.ratio_powerup) == 1)
         if top == -1:
             self.rect.top = random.randint(0,480)
         else:
             self.rect.top = top
         self.rect.left = 640
-        self.move           = -random.randint(2,7)
-        self.agressivity    = random.randint(1,5)
-        self.amplitude      = random.randint(1,5)
-        self.amplitude_2    = random.randint(0,5)
-        self.frequency      = random.random()*0.1+0.05
-        self.frequency_2    = random.random()*0.2
+        #Plane, fast forward
+        if self.value == 4:
+            self.move           = -random.randint(2,7)
+            self.agressivity    = random.randint(1,2)
+            self.amplitude      = 0
+            self.amplitude_2    = 0
+            self.frequency      = 0
+            self.frequency_2    = 0
+        else:
+            self.move           = -random.randint(2,7)
+            self.agressivity    = random.randint(1,5)
+            self.amplitude      = random.randint(1,5)
+            self.amplitude_2    = random.randint(0,5)
+            self.frequency      = random.random()*0.1+0.05
+            self.frequency_2    = random.random()*0.2
         self.target = None
 
     def set_target(self, target):
@@ -66,6 +84,7 @@ class Miniboss(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
         self.stage = stage
         self.image, self.rect = utils.load_image("miniboss.png")
+        self.image_reference = self.image
         if top == -1:
             self.rect.top = random.randint(200,300)
         else:
@@ -117,14 +136,21 @@ class Miniboss(pygame.sprite.Sprite):
         self.age += 1
         #If the sprite is dying, create one explosion per frame
         if self.status == 1:
-            if self.rect.left< 640:
-                self.image = pygame.transform.rotate(self.image,1)
-            self.add_explosion()
-            #The first update when dead, store the age when dead, to create a limited number of explosions
             if self.dead_time == 0:
                 self.dead_time = self.age
             if self.age - self.dead_time > self.explosions:
                 self.status = 2
+            if self.rect.left< 640:
+                self.image = pygame.transform.rotate(self.image_reference,self.age - self.dead_time)
+                self.rect.top   += 1
+                self.rect.left  += 1
+                self.add_explosion()
+                self.add_explosion()
+                self.add_explosion()
+                self.add_explosion()
+                self.add_explosion()
+                self.add_explosion()
+            #The first update when dead, store the age when dead, to create a limited number of explosions
             new_opacity = max(0,255-(self.age - self.dead_time)*10)
             self.image.set_alpha(new_opacity)
             #don't shoot

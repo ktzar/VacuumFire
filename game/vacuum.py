@@ -26,6 +26,8 @@ class Vacuum():
         self.sounds = {};
         self.sounds['warning'] = utils.load_sound('warning.wav')
         self.sounds['powerup'] = utils.load_sound('powerup.wav')
+        #Load explosions
+        a = Explosion(pygame.Rect(0,0,10,10))
         #Create The Backgound
         self.background = Background(self.screen.get_size())
         #game variables
@@ -204,6 +206,7 @@ class Vacuum():
             enemies_hit = []
             for miniboss in self.minibosses:
                 if pygame.sprite.collide_mask(fireball, miniboss):
+                    fireball.kill()
                     enemies_hit.append(miniboss)
 
             for strike in enemies_hit:
