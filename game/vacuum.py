@@ -78,9 +78,10 @@ class Vacuum():
         self.level = Stage('level_1')
         self.font = utils.load_font('4114blasterc.ttf', 36)
 
-        self.game_started = True
-        self.game_finished = False
-        self.level_finished = False
+        self.game_started       = True
+        self.game_finished      = False
+        self.level_finished     = False
+        self.scene_finished     = False
 
     def handle_keys(self):
         #Handle Input Events
@@ -88,9 +89,10 @@ class Vacuum():
             if event.type == QUIT:
                 #exit
                 return
+            elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == False:
+                self.game_finished = True
             elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
-                pygame.quit()
-                quit()
+                self.scene_finished = True
                 
             if event.type == KEYDOWN:
                 self.game_started = True

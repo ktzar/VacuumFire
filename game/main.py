@@ -16,8 +16,8 @@ class Main():
            a loop until the function returns."""
         #Initialize Everything
         pygame.init()
-        self.screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN | pygame.DOUBLEBUF)
-        #self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE)
+        #self.screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN | pygame.DOUBLEBUF)
+        self.screen = pygame.display.set_mode((640, 480), pygame.HWSURFACE)
         pygame.display.set_caption('VacuumFire')
         #pygame.display.toggle_fullscreen()
         pygame.mouse.set_visible(0)
@@ -49,7 +49,11 @@ class Main():
                     self.music_game_playing = True
                 if vacuum == False:
                     vacuum = Vacuum(self.screen)
-                vacuum.loop()
+                if vacuum.scene_finished == True:
+                    intro = Intro(self.screen)
+                    vacuum = False
+                else:
+                    vacuum.loop()
             pygame.display.flip()
 
     #Game Over
