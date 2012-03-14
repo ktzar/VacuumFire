@@ -20,11 +20,11 @@ class Flying_Label(pygame.sprite.Sprite):
         self.image.set_colorkey((0,0,0))
 
     def update(self):
-        new_alpha = max(0,255-self.age * 25)
+        new_alpha = max(0,255-self.age * 20)
         self.image.set_alpha (new_alpha)
         self.age += 1
-        self.rect.top -= self.age/3 + random.randint(1,5)
-        if self.age > 11:
+        self.rect.top -= (self.age/6)**3
+        if self.age > 15:
             self.kill()
 
 

@@ -142,25 +142,27 @@ class Vacuum():
             self.score.add_score(powerup_obtained.value)
             #TODO powerup should be processed in ship
             print 'powerup:',powerup_obtained.type
+	    label_pos = self.ship.rect.copy()
+    	    label_pos.top -= 20
             if powerup_obtained.type == 0:
                 self.ship.life_up()
-                self.hud.add(Flying_Label( self.ship.rect, 'Energy'))
+                self.hud.add(Flying_Label( label_pos, 'Energy'))
                 self.lifemeter.life = self.ship.life
             elif powerup_obtained.type == 1 and self.ship.powerup['speedup'] < 5:
                 self.ship.powerup['speedup'] += 1 
                 self.powerup_speed.set_status(self.ship.powerup['speedup'])
-                self.hud.add(Flying_Label( self.ship.rect, 'Speed up'))
+                self.hud.add(Flying_Label( label_pos, 'Speed up'))
                 #print "Increase speed to {0}".format(self.ship.powerup['speedup'])
             elif powerup_obtained.type == 2 and Laser.max_lasers < 5:
                 Laser.max_lasers += 1 
                 Laser.move += 2 
                 self.powerup_weapon.set_status(Laser.max_lasers)
                 print "Increase lasers to {0}".format(Laser.max_lasers)
-                self.hud.add(Flying_Label( self.ship.rect, 'Lasers'))
+                self.hud.add(Flying_Label( label_pos, 'Lasers'))
 
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
                 print "Activate penetration"
-                self.hud.add(Flying_Label( self.ship.rect, 'Penetration'))
+                self.hud.add(Flying_Label( label_pos, 'Penetration'))
                 self.ship.powerup['penetrate'] = True
             elif powerup_obtained.type == 4:
                 print "Activate buddy"
@@ -169,6 +171,7 @@ class Vacuum():
                 self.powerup_buddy.set_status(self.ship.buddies)
             else:
                 print "No more powerups available"
+	    del label_pos
 
     def add_explosion(self, rect):
         self.explosions.add(Explosion(rect.copy()))
