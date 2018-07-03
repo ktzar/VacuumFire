@@ -77,6 +77,7 @@ def load_image_sprite(name, colorkey=None, rect=pygame.Rect(0,0,10,10)):
 def load_sound(name):
     class NoneSound:
         def play(self): pass
+        def stop(self): pass
     if not pygame.mixer or not pygame.mixer.get_init():
         return NoneSound()
     fullname = os.path.join(data_directory, name)
