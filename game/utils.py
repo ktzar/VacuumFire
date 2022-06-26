@@ -34,21 +34,28 @@ def set_option(key, value):
     options[key] = value
     pickle.dump( options, open( os.path.join(data_directory,"options.p"), "wb" ) )
 
-
+image_cache = {}
 
 #loads an image and returns it with the Rect
 def load_image(name, colorkey=None):
+    if name in image_cache:
+        return image_cache[name], image_cache[name].get_rect()
+
     fullname = os.path.join(data_directory, name)
     try:
         image = pygame.image.load(fullname)
+        if "gif" in name:
+            image = image.convert_alpha()
     except pygame.error as message:
         print('Cannot load image:', fullname)
         raise SystemExit(message)
-    image = image.convert_alpha()
     if colorkey != None:
         if colorkey == -1:
             colorkey = image.get_at((0,0))
         image.set_colorkey(colorkey, RLEACCEL)
+
+    image_cache[name] = image
+    print("Image cache size: ", len(image_cache))
     return image, image.get_rect()
 
 def save_image(name, surface):
@@ -61,17 +68,25 @@ def save_image(name, surface):
 
 #loads a part of an image and returns it with the Rect
 def load_image_sprite(name, colorkey=None, rect=pygame.Rect(0,0,10,10)):
+    cache_name = name + str(rect)
+    if cache_name in image_cache:
+        return image_cache[cache_name], rect
+
     fullname = os.path.join(data_directory, name)
     try:
         image = pygame.image.load(fullname)
+        if "gif" in name:
+            image = image.convert_alpha()
     except pygame.error as message:
         print('Cannot load image:', fullname)
         raise SystemExit(message)
-    image = image.convert_alpha()
     if colorkey != None:
         if colorkey == -1:
             colorkey = image.get_at((0,0))
         image.set_colorkey(colorkey, RLEACCEL)
+
+    image_cache[cache_name] = image.subsurface(rect)
+    print("Image cache size: ", len(image_cache))
     return image.subsurface(rect), rect
 
 #Loads a sound from the directory

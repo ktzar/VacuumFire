@@ -31,9 +31,17 @@ class Ship(pygame.sprite.Sprite):
     #Ship.LEFT or Ship.RIGHT (for the animation)
     x_status = ''
 
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self) #call Sprite intializer
+
+        self.normal_image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,86,54,43))
+        self.up_image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,43,54,43))
+        self.down_image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
+
+
         self.image, self.rect = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
+
         screen = pygame.display.get_surface()
         self.age = 0
         self.area = screen.get_rect()
@@ -65,11 +73,11 @@ class Ship(pygame.sprite.Sprite):
 
         #change image depending on vertical momentum
         if self.y_momentum > 4:
-            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,86,54,43))
+            self.image = self.normal_image
         elif self.y_momentum < -4:
-            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,43,54,43))
+            self.image = self.up_image
         else:
-            self.image, foo = utils.load_image_sprite('spaceship.png', rect=pygame.Rect(0,0,54,43))
+            self.image = self.down_image
 
 
     def damage(self):

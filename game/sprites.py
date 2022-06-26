@@ -40,7 +40,7 @@ class Score_Meter(pygame.sprite.Sprite):
         self.reload_image()
 
     def reload_image(self):
-        score_text = 'Score: {0}'.format((self.score))
+        score_text = 'Score: {0}'.format(int(self.score))
         text = self.font.render(score_text, 1, (255, 255, 255))
         text_shadow = self.font.render(score_text, 1, (0,0,0))
         self.image = pygame.Surface(self.font.size(score_text))
@@ -49,11 +49,11 @@ class Score_Meter(pygame.sprite.Sprite):
         self.image.set_colorkey((0,0,0))
 
     def add_score(self, score):
-        self.target_score += int(score)
+        self.target_score += score
 
     def update(self):
         if self.target_score > self.score:
-            self.score += (self.target_score - self.score ) / 10 + random.randint(5,9)
+            self.score += int((self.target_score - self.score ) / 10) + random.randint(5,9)
             if self.score > self.target_score:
                 self.score = self.target_score
             self.reload_image()
