@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-import utils
+from . import utils
 
 """Class that represents the laser that the player shoots"""
 class Laser(pygame.sprite.Sprite):

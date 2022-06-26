@@ -2,17 +2,17 @@
 import os, pygame, time
 import random
 from pygame.locals import *
-import utils
-from ship       import Ship
-from laser      import *
-from powerup    import Powerup
-from enemies    import *
-from stage      import Stage
-from explosion  import Explosion
-from life_meter import LifeMeter
-from background import Background
-from meters     import *
-from sprites    import *
+from . import utils
+from .ship       import Ship
+from .laser      import *
+from .powerup    import Powerup
+from .enemies    import *
+from .stage      import Stage
+from .explosion  import Explosion
+from .life_meter import LifeMeter
+from .background import Background
+from .meters     import *
+from .sprites    import *
 
 show_dummies = False
 
@@ -93,7 +93,7 @@ class Vacuum():
                 self.game_finished = True
             elif event.type == KEYDOWN and event.key == K_ESCAPE and self.game_finished == True:
                 self.scene_finished = True
-                
+
             if event.type == KEYDOWN:
                 self.game_started = True
                 if event.key == K_ESCAPE:
@@ -141,9 +141,9 @@ class Vacuum():
             self.sounds['powerup'].play()
             self.score.add_score(powerup_obtained.value)
             #TODO powerup should be processed in ship
-            print 'powerup:',powerup_obtained.type
-	    label_pos = self.ship.rect.copy()
-    	    label_pos.top -= 20
+            print('powerup:',powerup_obtained.type)
+            label_pos = self.ship.rect.copy()
+            label_pos.top -= 20
             if powerup_obtained.type == 0:
                 self.ship.life_up()
                 self.hud.add(Flying_Label( label_pos, 'Energy'))
@@ -157,21 +157,21 @@ class Vacuum():
                 Laser.max_lasers += 1 
                 Laser.move += 2 
                 self.powerup_weapon.set_status(Laser.max_lasers)
-                print "Increase lasers to {0}".format(Laser.max_lasers)
+                print("Increase lasers to {0}".format(Laser.max_lasers))
                 self.hud.add(Flying_Label( label_pos, 'Lasers'))
 
             elif powerup_obtained.type == 3 and self.ship.powerup['penetrate'] == False:
-                print "Activate penetration"
+                print("Activate penetration")
                 self.hud.add(Flying_Label( label_pos, 'Penetration'))
                 self.ship.powerup['penetrate'] = True
             elif powerup_obtained.type == 4:
-                print "Activate buddy"
+                print("Activate buddy")
                 self.buddies.add(Buddy(self.ship))
                 self.ship.buddies += 1
                 self.powerup_buddy.set_status(self.ship.buddies)
             else:
-                print "No more powerups available"
-	    del label_pos
+                print("No more powerups available")
+            del label_pos
 
     def add_explosion(self, rect):
         self.explosions.add(Explosion(rect.copy()))
@@ -281,7 +281,7 @@ class Vacuum():
         self.process_damage(damage)
         self.process_killedaliens()
 
-        
+
         #Dummy lines to show the ship's current limits
         if show_dummies:
             the_limits = self.level.the_limits(self.ship.rect)

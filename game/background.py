@@ -1,5 +1,5 @@
 import pygame
-import utils
+from . import utils
 
 class Background(pygame.Surface):
 

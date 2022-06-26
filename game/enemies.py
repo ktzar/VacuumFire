@@ -1,8 +1,8 @@
 import pygame
-import utils
+from . import utils
 import random
 import math
-from laser import EnemyLaser
+from .laser import EnemyLaser
 
 class Alien(pygame.sprite.Sprite):
     #bomb sound

@@ -1,6 +1,6 @@
 import random
 import pygame
-import utils
+from . import utils
 
 
 """Stage"""
@@ -36,22 +36,22 @@ class Stage(pygame.Surface):
             self.calculate_limits()
 
                 
-        except pygame.error, message:
-            print message
-        except IndexError, message:
-            print message
-        except Exception, message:
-            print message
-            print 'No cached image, generating it'
+        except pygame.error as message:
+            print(message)
+        except IndexError as message:
+            print(message)
+        except Exception as message:
+            print(message)
+            print('No cached image, generating it')
         except:
-            print 'No cached image, generating it'
+            print('No cached image, generating it')
 
         level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
-        print "MD5 of level ",level_md5
+        print("MD5 of level ",level_md5)
         level_old_md5 = utils.get_option('{0}_hash'.format(stage_file))
-        print "Old MD5 of level ",level_old_md5
+        print("Old MD5 of level ",level_old_md5)
         if level_md5 != level_old_md5:
-            print "Level has changed, process it again"
+            print("Level has changed, process it again")
             cached_image = False 
 
         if cached_image == False:
@@ -135,7 +135,7 @@ class Stage(pygame.Surface):
 
 
                         except:
-                            print "Out of range in {0},{1}".format(x,y)
+                            print("Out of range in {0},{1}".format(x,y))
 
                         if sprite_chosen == "center":
                             #Choose one random grass sprite
@@ -151,9 +151,9 @@ class Stage(pygame.Surface):
                         over_lava = self.overimage_lava.get_at((x%self.overrect_lava.width,y%self.overrect_lava.height))
                         over_rock = self.overimage_rocks.get_at((x%self.overrect_rocks.width,y%self.overrect_rocks.height))
                         #Processed colours should be between 1 and 250 (if it's 0,0,0 it'll be keyed)
-                        new_colour.r = max(1,min(new_colour.r + over_lava.r*2 - over_rock.r/2,250))
-                        new_colour.g = max(1,min(new_colour.g - over_lava.r - over_rock.r/2,250))
-                        new_colour.b = max(1,min(new_colour.b - over_lava.r - over_rock.r/2,250))
+                        new_colour.r = int(max(1,min(new_colour.r + over_lava.r*2 - over_rock.r/2,250)))
+                        new_colour.g = int(max(1,min(new_colour.g - over_lava.r - over_rock.r/2,250)))
+                        new_colour.b = int(max(1,min(new_colour.b - over_lava.r - over_rock.r/2,250)))
                         """
                         this draws a ratio*ratio grid in the level, useful for some debugging
                         if x % self.ratio == 0 or y % self.ratio == 0:
@@ -162,7 +162,7 @@ class Stage(pygame.Surface):
                         self.set_at((x,y), new_colour)
             utils.save_image('{0}_processed.png'.format(stage_file), self)
             level_md5 = utils.file_md5('{0}.gif'.format(stage_file))
-            print "MD5 of stage: {0}".format(level_md5)
+            print("MD5 of stage: {0}".format(level_md5))
             utils.set_option('{0}_hash'.format(stage_file), level_md5)
 
     def calculate_limits(self):

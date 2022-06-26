@@ -1,5 +1,5 @@
 import pygame
-import utils
+from . import utils
 
 """This class represents the ship that the player controls"""
 class Ship(pygame.sprite.Sprite):

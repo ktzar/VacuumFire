@@ -1,5 +1,6 @@
 import pygame
-import utils, random, math
+from . import utils
+import random, math
 
 class Dummy(pygame.sprite.Sprite):
     def __init__(self):
@@ -48,7 +49,7 @@ class Score_Meter(pygame.sprite.Sprite):
         self.image.set_colorkey((0,0,0))
 
     def add_score(self, score):
-        self.target_score += score
+        self.target_score += int(score)
 
     def update(self):
         if self.target_score > self.score:

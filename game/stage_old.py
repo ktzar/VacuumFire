@@ -1,5 +1,5 @@
 import pygame
-import utils
+from . import utils
 
 class Grass(pygame.sprite.Sprite):
     def __init__(self, pos):

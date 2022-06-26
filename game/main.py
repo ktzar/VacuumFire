@@ -1,16 +1,16 @@
 #Import Modules
 import os, pygame, time
 import random
-import utils
+from . import utils
 from pygame.locals import *
-from intro       import Intro
-from vacuum      import Vacuum
+from .intro       import Intro
+from .vacuum      import Vacuum
 
 class Main():
 
     def __init__(self):
-        if not pygame.font: print 'Warning, fonts disabled'
-        if not pygame.mixer: print 'Warning, sound disabled'
+        if not pygame.font: print('Warning, fonts disabled')
+        if not pygame.mixer: print('Warning, sound disabled')
         """this function is called when the program starts.
            it initializes everything it needs, then runs in
            a loop until the function returns."""

@@ -2,7 +2,7 @@
 import os, pygame, time
 import random
 from pygame.locals import *
-import utils
+from . import utils
 
 class Intro():
 
